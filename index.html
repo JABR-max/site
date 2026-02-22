@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JABR Publication Consultancy – Global Academic Research & Journal Publication Support</title>
+  <meta name="description"
+    content="JABR Publication Consultancy provides end-to-end academic consultancy helping researchers publish in Scopus, SCI, SCIE, and Web of Science indexed journals across 15+ countries." />
+  <meta name="keywords"
+    content="Scopus journal, SCI publication, SCIE, Web of Science, academic research, journal publication, manuscript editing, PhD support, research consultancy" />
+  <meta name="author" content="JABR Publication Consultancy" />
+  <meta property="og:title" content="JABR Publication Consultancy – Global Research Support" />
+  <meta property="og:description" content="End-to-end academic consultancy for high-impact journal publication." />
+  <meta property="og:image" content="logo.jpeg" />
+  <link rel="icon" type="image/jpeg" href="logo.jpeg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="preloader-inner">
+      <img src="logo.jpeg" alt="JABR" class="preloader-logo" />
+      <div class="preloader-bar">
+        <div class="preloader-bar-fill"></div>
+      </div>
+      <p>Loading Global Research Platform...</p>
+    </div>
+  </div>
+
+  <!-- Cursor Glow -->
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <!-- Scroll Progress Indicator -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- Announcement Bar -->
+  <div class="announcement-bar">
+    <div class="announcement-scroll">
+      <span><i class="fas fa-globe-americas"></i> Supporting Researchers Across <strong>15+ Countries</strong></span>
+      <span class="ann-sep">✦</span>
+      <span><i class="fas fa-award"></i> <strong>98%</strong> Client Satisfaction Rate</span>
+      <span class="ann-sep">✦</span>
+      <span><i class="fas fa-book-open"></i> <strong>120+</strong> Successfully Published Journals</span>
+      <span class="ann-sep">✦</span>
+      <span><i class="fas fa-envelope"></i> info@jabrpublication.com</span>
+      <span class="ann-sep">✦</span>
+      <span><i class="fas fa-phone"></i> +91-XXXX-XXXXXX</span>
+      <!-- Duplicate for seamless scroll -->
+      <span><i class="fas fa-globe-americas"></i> Supporting Researchers Across <strong>15+ Countries</strong></span>
+      <span class="ann-sep">✦</span>
+      <span><i class="fas fa-award"></i> <strong>98%</strong> Client Satisfaction Rate</span>
+      <span class="ann-sep">✦</span>
+      <span><i class="fas fa-book-open"></i> <strong>120+</strong> Successfully Published Journals</span>
+      <span class="ann-sep">✦</span>
+      <span><i class="fas fa-envelope"></i> info@jabrpublication.com</span>
+      <span class="ann-sep">✦</span>
+      <span><i class="fas fa-phone"></i> +91-XXXX-XXXXXX</span>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-inner">
+      <a href="#" class="logo">
+        <img src="logo.jpeg" alt="JABR Publication Consultancy" class="logo-img" />
+        <div class="logo-text">
+          <span class="logo-brand">JABR</span>
+          <span class="logo-sub">Publication Consultancy</span>
+        </div>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="active">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#process">Process</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="#blog">Insights</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="#contact" class="nav-cta"><i class="fas fa-calendar-check"></i> Book Consultation</a>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="home">
+    <div class="hero-bg">
+      <canvas id="heroParticles"></canvas>
+      <div class="hero-gradient-overlay"></div>
+      <!-- Morphing blobs -->
+      <div class="morphing-blob blob-1"></div>
+      <div class="morphing-blob blob-2"></div>
+      <div class="morphing-blob blob-3"></div>
+    </div>
+    <div class="container hero-content">
+      <div class="hero-badge">
+        <span class="badge-pulse"></span>
+        <i class="fas fa-award"></i> Trusted by 300+ Researchers Worldwide
+      </div>
+      <h1>Global Publication Support<br />for <span class="typing-text" id="typingText"></span></h1>
+      <p class="hero-sub">End-to-end academic consultancy helping researchers publish in<br />Scopus, SCI, SCIE, and
+        Web of Science indexed journals.</p>
+      <div class="hero-buttons">
+        <a href="#contact" class="btn btn-primary btn-glow"><i class="fas fa-calendar-check"></i> Book Global
+          Consultation</a>
+        <a href="#services" class="btn btn-outline"><i class="fas fa-arrow-right"></i> View Our Global Services</a>
+      </div>
+      <!-- Trust Badges -->
+      <div class="trust-badges">
+        <div class="trust-badge"><i class="fas fa-check-circle"></i> Scopus Journal Support</div>
+        <div class="trust-badge"><i class="fas fa-check-circle"></i> SCI / SCIE Assistance</div>
+        <div class="trust-badge"><i class="fas fa-check-circle"></i> Web of Science Targeting</div>
+        <div class="trust-badge"><i class="fas fa-check-circle"></i> International Conference Papers</div>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <span>Scroll to explore</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section class="section about" id="about">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-globe"></i> About Us</span>
+        <h2>Global Expertise in<br /><span class="gradient-text">Academic Publishing</span></h2>
+        <p class="section-desc">We operate with an international outlook, helping researchers from diverse disciplines
+          achieve high-impact publication success.</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-content">
+          <div class="about-feature">
+            <div class="about-feature-icon"><i class="fas fa-network-wired"></i></div>
+            <div>
+              <h3>International Publication Network</h3>
+              <p>Direct connections with global editorial boards and indexed journal databases across multiple
+                disciplines.</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon"><i class="fas fa-database"></i></div>
+            <div>
+              <h3>Global Journal Database Expertise</h3>
+              <p>In-depth knowledge of Scopus, SCI, SCIE, and Web of Science indexing criteria and standards.</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon"><i class="fas fa-shield-alt"></i></div>
+            <div>
+              <h3>Confidential Manuscript Handling</h3>
+              <p>Strict NDA-backed confidentiality protocols ensuring your research is fully protected.</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon"><i class="fas fa-balance-scale"></i></div>
+            <div>
+              <h3>Ethical Publication Standards</h3>
+              <p>Adherence to COPE guidelines and international academic integrity frameworks.</p>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon"><i class="fas fa-layer-group"></i></div>
+            <div>
+              <h3>Multi-Disciplinary Support</h3>
+              <p>Expertise spanning engineering, medicine, social sciences, management, and pure sciences.</p>
+            </div>
+          </div>
+        </div>
+        <div class="about-stats">
+          <div class="stat-card" data-color="#3b82f6">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-number" data-target="300">0</div>
+            <div class="stat-plus">+</div>
+            <div class="stat-label">Global Clients</div>
+            <div class="stat-bar">
+              <div class="stat-bar-fill" data-width="85"></div>
+            </div>
+          </div>
+          <div class="stat-card" data-color="#8b5cf6">
+            <div class="stat-icon"><i class="fas fa-book"></i></div>
+            <div class="stat-number" data-target="120">0</div>
+            <div class="stat-plus">+</div>
+            <div class="stat-label">Journal Publications</div>
+            <div class="stat-bar">
+              <div class="stat-bar-fill" data-width="72"></div>
+            </div>
+          </div>
+          <div class="stat-card" data-color="#06b6d4">
+            <div class="stat-icon"><i class="fas fa-globe-americas"></i></div>
+            <div class="stat-number" data-target="15">0</div>
+            <div class="stat-plus">+</div>
+            <div class="stat-label">Countries Served</div>
+            <div class="stat-bar">
+              <div class="stat-bar-fill" data-width="60"></div>
+            </div>
+          </div>
+          <div class="stat-card" data-color="#10b981">
+            <div class="stat-icon"><i class="fas fa-heart"></i></div>
+            <div class="stat-number" data-target="98">0</div>
+            <div class="stat-plus">%</div>
+            <div class="stat-label">Client Satisfaction</div>
+            <div class="stat-bar">
+              <div class="stat-bar-fill" data-width="98"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES SECTION -->
+  <section class="section services" id="services">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-concierge-bell"></i> Our Services</span>
+        <h2>Comprehensive <span class="gradient-text">Publication Services</span></h2>
+        <p class="section-desc">From manuscript inception to journal acceptance — we cover every stage of the
+          publication lifecycle.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">01</div>
+          <div class="service-icon"><i class="fas fa-book-open"></i></div>
+          <h3>Scopus Journal Publication</h3>
+          <p>Complete end-to-end support for publishing in Scopus-indexed journals with expert guidance on journal
+            selection and formatting.</p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">02</div>
+          <div class="service-icon"><i class="fas fa-microscope"></i></div>
+          <h3>SCI / SCIE Journal Targeting</h3>
+          <p>Strategic targeting and submission to Science Citation Index and Expanded journals with high impact factor
+            analysis.</p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">03</div>
+          <div class="service-icon"><i class="fas fa-globe"></i></div>
+          <h3>Web of Science Support</h3>
+          <p>Expert support for publishing in Web of Science indexed journals with core collection targeting strategies.
+          </p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">04</div>
+          <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+          <h3>Q1 / Q2 Journal Identification</h3>
+          <p>Identification and targeting of top-quartile journals aligned with your research domain for maximum impact.
+          </p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">05</div>
+          <div class="service-icon"><i class="fas fa-pen-fancy"></i></div>
+          <h3>Manuscript Structuring & Editing</h3>
+          <p>Professional editing, language polishing, and structural refinement by domain-expert academic editors.</p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">06</div>
+          <div class="service-icon"><i class="fas fa-spell-check"></i></div>
+          <h3>Plagiarism Reduction & Quality</h3>
+          <p>Comprehensive plagiarism analysis, paraphrasing support, and quality enhancement using Turnitin and
+            iThenticate.</p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">07</div>
+          <div class="service-icon"><i class="fas fa-chart-bar"></i></div>
+          <h3>Statistical Data Analysis</h3>
+          <p>Advanced statistical analysis using SPSS, MATLAB, Python, and R for robust, publication-ready results.</p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">08</div>
+          <div class="service-icon"><i class="fas fa-graduation-cap"></i></div>
+          <h3>Thesis & Dissertation Formatting</h3>
+          <p>International university formatting standards including APA, IEEE, Harvard, and custom university
+            guidelines.</p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">09</div>
+          <div class="service-icon"><i class="fas fa-copyright"></i></div>
+          <h3>Patent & Copyright Filing</h3>
+          <p>Complete patent drafting and intellectual property filing assistance for novel research innovations.</p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="service-card">
+          <div class="service-card-glow"></div>
+          <div class="service-number">10</div>
+          <div class="service-icon"><i class="fas fa-users-cog"></i></div>
+          <h3>Conference Paper Support</h3>
+          <p>International IEEE, Springer, and Elsevier conference paper preparation, formatting, and submission
+            support.</p>
+          <a href="#contact" class="service-link">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS SECTION -->
+  <section class="section process" id="process">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-project-diagram"></i> Our Process</span>
+        <h2>How We <span class="gradient-text">Work Globally</span></h2>
+        <p class="section-desc">A streamlined, transparent five-stage process trusted by researchers worldwide.</p>
+      </div>
+      <div class="timeline-horizontal">
+        <div class="timeline-h-line">
+          <div class="timeline-h-fill" id="timelineHFill"></div>
+        </div>
+        <div class="timeline-h-items">
+          <div class="timeline-h-item">
+            <div class="timeline-h-dot"><span>01</span></div>
+            <div class="timeline-h-card">
+              <div class="timeline-h-icon"><i class="fas fa-comments"></i></div>
+              <h3>Requirement Discussion</h3>
+              <p>Online global consultation to understand your research domain, objectives, and target journals.</p>
+            </div>
+          </div>
+          <div class="timeline-h-item">
+            <div class="timeline-h-dot"><span>02</span></div>
+            <div class="timeline-h-card">
+              <div class="timeline-h-icon"><i class="fas fa-crosshairs"></i></div>
+              <h3>Journal Matching</h3>
+              <p>Strategic identification of best-fit indexed journals based on scope, impact factor, and acceptance
+                rates.</p>
+            </div>
+          </div>
+          <div class="timeline-h-item">
+            <div class="timeline-h-dot"><span>03</span></div>
+            <div class="timeline-h-card">
+              <div class="timeline-h-icon"><i class="fas fa-file-alt"></i></div>
+              <h3>Manuscript Enhancement</h3>
+              <p>Professional editing, formatting, and structural optimization to meet journal-specific requirements.
+              </p>
+            </div>
+          </div>
+          <div class="timeline-h-item">
+            <div class="timeline-h-dot"><span>04</span></div>
+            <div class="timeline-h-card">
+              <div class="timeline-h-icon"><i class="fas fa-search-plus"></i></div>
+              <h3>Quality Review</h3>
+              <p>Rigorous quality assurance including plagiarism checks, statistical validation, and peer-level review.
+              </p>
+            </div>
+          </div>
+          <div class="timeline-h-item">
+            <div class="timeline-h-dot"><span>05</span></div>
+            <div class="timeline-h-card">
+              <div class="timeline-h-icon"><i class="fas fa-paper-plane"></i></div>
+              <h3>Submission & Handling</h3>
+              <p>Journal submission, reviewer response drafting, revisions, and follow-up until final acceptance.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY TRUST US SECTION -->
+  <section class="section why-us" id="whyus">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-star"></i> Why Choose Us</span>
+        <h2>Why Global Researchers<br /><span class="gradient-text-light">Trust Us</span></h2>
+        <p class="section-desc">Six pillars of excellence that set us apart in academic publishing consultancy.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon"><i class="fas fa-user-tie"></i></div>
+          </div>
+          <h3>Dedicated Research Mentors</h3>
+          <p>Personal mentors with PhD-level expertise guide you through every stage of the publication journey.</p>
+          <div class="feature-glow"></div>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon"><i class="fas fa-handshake"></i></div>
+          </div>
+          <h3>Transparent & Ethical Process</h3>
+          <p>Complete transparency in timelines, pricing, and processes with the highest ethical standards.</p>
+          <div class="feature-glow"></div>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
+          </div>
+          <h3>High-Impact Journal Strategy</h3>
+          <p>Data-driven journal targeting strategies to maximize your research visibility and citation impact.</p>
+          <div class="feature-glow"></div>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon"><i class="fas fa-lock"></i></div>
+          </div>
+          <h3>Confidential Data Protection</h3>
+          <p>Enterprise-grade data security with NDA agreements ensuring complete confidentiality of your research.</p>
+          <div class="feature-glow"></div>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon"><i class="fas fa-certificate"></i></div>
+          </div>
+          <h3>Global Editorial Standards</h3>
+          <p>Our editorial team upholds international publishing standards aligned with top-tier journal requirements.
+          </p>
+          <div class="feature-glow"></div>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon-wrap">
+            <div class="feature-icon"><i class="fas fa-clock"></i></div>
+          </div>
+          <h3>Time-Bound Delivery System</h3>
+          <p>Guaranteed milestone-based delivery timelines with regular progress updates and communication.</p>
+          <div class="feature-glow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM & PARTNERS SECTION -->
+  <section class="section team-partners" id="team">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-users"></i> Our Team</span>
+        <h2>Expert Team &<br /><span class="gradient-text">Strategic Partners</span></h2>
+        <p class="section-desc">Dedicated professionals and trusted partners committed to your research success globally.</p>
+      </div>
+
+      <!-- Team Members -->
+      <div class="team-section">
+        <h3 class="team-subtitle"><i class="fas fa-user-tie"></i> Leadership Team</h3>
+        <div class="team-grid">
+          <div class="team-card">
+            <div class="team-card-image">
+              <div class="team-avatar" style="background: linear-gradient(135deg, #0d9488 0%, #3b82f6 100%);"><i class="fas fa-user"></i></div>
+              <div class="team-socials">
+                <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+              </div>
+            </div>
+            <h4>Dr. Priya Sharma</h4>
+            <p class="team-role">Founder & CEO</p>
+            <p class="team-bio">15+ years in academic publishing. PhD in Research Methodology. Passionate about making quality publishing accessible globally.</p>
+          </div>
+
+          <div class="team-card">
+            <div class="team-card-image">
+              <div class="team-avatar" style="background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);"><i class="fas fa-user"></i></div>
+              <div class="team-socials">
+                <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+              </div>
+            </div>
+            <h4>Prof. James Mitchell</h4>
+            <p class="team-role">Chief Editorial Officer</p>
+            <p class="team-bio">20+ years in peer review and editorial governance. Former Editor at Nature-indexed journals. Ensures publication quality standards.</p>
+          </div>
+
+          <div class="team-card">
+            <div class="team-card-image">
+              <div class="team-avatar" style="background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%);"><i class="fas fa-user"></i></div>
+              <div class="team-socials">
+                <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+              </div>
+            </div>
+            <h4>Dr. Amrita Patel</h4>
+            <p class="team-role">Head of Research Analytics</p>
+            <p class="team-bio">Data scientist with expertise in statistical analysis. Masters in Statistics. Specializes in SPSS, Python, and R analytics.</p>
+          </div>
+
+          <div class="team-card">
+            <div class="team-card-image">
+              <div class="team-avatar" style="background: linear-gradient(135deg, #0d9488 0%, #1e3a8a 100%);"><i class="fas fa-user"></i></div>
+              <div class="team-socials">
+                <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+              </div>
+            </div>
+            <h4>Marcus Chen</h4>
+            <p class="team-role">Global Operations Director</p>
+            <p class="team-bio">Expert in international publishing workflows. Manages partnerships across 15+ countries. Ensures seamless cross-border coordination.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strategic Partners -->
+      <div class="partners-section">
+        <h3 class="team-subtitle"><i class="fas fa-handshake"></i> Strategic Partners</h3>
+        <p class="partners-desc">We collaborate with leading institutions and publishing platforms to enhance our services.</p>
+        <div class="partners-grid">
+          <div class="partner-card">
+            <div class="partner-logo">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <h4>Scopus Publishing</h4>
+            <p>Exclusive access partner for Scopus-indexed journal submissions and guidance.</p>
+          </div>
+          <div class="partner-card">
+            <div class="partner-logo">
+              <i class="fas fa-globe"></i>
+            </div>
+            <h4>Web of Science Alliance</h4>
+            <p>Certified partner for WoS journal selection and manuscript optimization strategies.</p>
+          </div>
+          <div class="partner-card">
+            <div class="partner-logo">
+              <i class="fas fa-microscope"></i>
+            </div>
+            <h4>International Research Council</h4>
+            <p>Collaboration for maintaining global academic publishing standards and ethics.</p>
+          </div>
+          <div class="partner-card">
+            <div class="partner-logo">
+              <i class="fas fa-university"></i>
+            </div>
+            <h4>Academic Institutions Network</h4>
+            <p>Partnerships with 50+ universities worldwide for researcher support programs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section class="section faq" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-question-circle"></i> FAQ</span>
+        <h2>Frequently Asked<br /><span class="gradient-text">Questions</span></h2>
+        <p class="section-desc">Find answers to the most common queries about our global publication services.</p>
+      </div>
+      <div class="faq-container">
+        <div class="faq-item">
+          <button class="faq-question">
+            <span><i class="fas fa-circle-question faq-q-icon"></i> What is Scopus indexing and why does it
+              matter?</span>
+            <i class="fas fa-chevron-down faq-chevron"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Scopus is the largest abstract and citation database of peer-reviewed literature. Publishing in
+              Scopus-indexed journals enhances your research visibility, increases citations, and is often a requirement
+              for academic promotions, PhD completion, and research funding globally.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">
+            <span><i class="fas fa-circle-question faq-q-icon"></i> How long does the publication process typically
+              take?</span>
+            <i class="fas fa-chevron-down faq-chevron"></i>
+          </button>
+          <div class="faq-answer">
+            <p>The timeline varies by journal. Scopus journals typically take 3–6 months, while SCI/SCIE journals may
+              take 4–12 months depending on the review process. We provide estimated timelines during consultation and
+              keep you updated at every stage.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">
+            <span><i class="fas fa-circle-question faq-q-icon"></i> Do you guarantee publication in indexed
+              journals?</span>
+            <i class="fas fa-chevron-down faq-chevron"></i>
+          </button>
+          <div class="faq-answer">
+            <p>We do not guarantee acceptance, as final decisions rest with journal editors and peer reviewers. However,
+              we significantly enhance your manuscript quality, ensure proper formatting, and strategically target
+              journals where your research has the highest probability of acceptance.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">
+            <span><i class="fas fa-circle-question faq-q-icon"></i> How do you ensure confidentiality of our
+              research?</span>
+            <i class="fas fa-chevron-down faq-chevron"></i>
+          </button>
+          <div class="faq-answer">
+            <p>We implement strict confidentiality protocols including NDAs with all team members, encrypted file
+              transfers, restricted access to manuscripts, and secure cloud storage. Your intellectual property and
+              research data are protected at every stage.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">
+            <span><i class="fas fa-circle-question faq-q-icon"></i> Do you support international researchers outside
+              India?</span>
+            <i class="fas fa-chevron-down faq-chevron"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Absolutely. We serve researchers across 15+ countries including the UK, UAE, Saudi Arabia, Singapore,
+              Egypt, Malaysia, and more. All consultations are conducted virtually, and we accommodate multiple time
+              zones for seamless collaboration.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG / INSIGHTS SECTION -->
+  <section class="section blog" id="blog">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-lightbulb"></i> Insights</span>
+        <h2>Research <span class="gradient-text">Publication Insights</span></h2>
+        <p class="section-desc">Expert articles and tips to help you navigate the academic publishing landscape.</p>
+      </div>
+      <div class="blog-grid">
+        <article class="blog-card">
+          <div class="blog-image">
+            <div class="blog-image-placeholder"><i class="fas fa-search"></i></div>
+            <span class="blog-category">Journal Selection</span>
+          </div>
+          <div class="blog-body">
+            <div class="blog-meta">
+              <span><i class="fas fa-calendar"></i> Feb 15, 2026</span>
+              <span><i class="fas fa-clock"></i> 5 min read</span>
+            </div>
+            <h3>How to Choose the Right Scopus Journal for Your Research</h3>
+            <p>A comprehensive guide to selecting the most appropriate Scopus-indexed journal based on scope, impact
+              factor, and review timelines.</p>
+            <a href="#" class="blog-link">Read Article <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </article>
+        <article class="blog-card">
+          <div class="blog-image">
+            <div class="blog-image-placeholder"><i class="fas fa-shield-alt"></i></div>
+            <span class="blog-category">Research Ethics</span>
+          </div>
+          <div class="blog-body">
+            <div class="blog-meta">
+              <span><i class="fas fa-calendar"></i> Feb 10, 2026</span>
+              <span><i class="fas fa-clock"></i> 7 min read</span>
+            </div>
+            <h3>How to Identify and Avoid Predatory Journals</h3>
+            <p>Learn the red flags of predatory publishers and protect your research from fraudulent journals that
+              undermine academic credibility.</p>
+            <a href="#" class="blog-link">Read Article <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </article>
+        <article class="blog-card">
+          <div class="blog-image">
+            <div class="blog-image-placeholder"><i class="fas fa-chart-line"></i></div>
+            <span class="blog-category">Publication Tips</span>
+          </div>
+          <div class="blog-body">
+            <div class="blog-meta">
+              <span><i class="fas fa-calendar"></i> Feb 5, 2026</span>
+              <span><i class="fas fa-clock"></i> 6 min read</span>
+            </div>
+            <h3>10 Proven Tips for a High Acceptance Rate</h3>
+            <p>Actionable strategies used by successful researchers to increase manuscript acceptance rates in top-tier
+              indexed journals.</p>
+            <a href="#" class="blog-link">Read Article <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section class="section contact" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag"><i class="fas fa-headset"></i> Contact Us</span>
+        <h2>Connect With Our<br /><span class="gradient-text">Global Research Team</span></h2>
+        <p class="section-desc">Ready to publish? Reach out to our expert consultants today.</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-form-wrapper">
+          <form class="contact-form" id="contactForm" action="/api/contact" method="POST" enctype="multipart/form-data">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fullName">Full Name *</label>
+                <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required />
+              </div>
+              <div class="form-group">
+                <label for="country">Country *</label>
+                <select id="country" name="country" required>
+                  <option value="">Select your country</option>
+                  <option>India</option>
+                  <option>United Arab Emirates</option>
+                  <option>Saudi Arabia</option>
+                  <option>United Kingdom</option>
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>Singapore</option>
+                  <option>Malaysia</option>
+                  <option>Egypt</option>
+                  <option>Qatar</option>
+                  <option>Germany</option>
+                  <option>France</option>
+                  <option>Australia</option>
+                  <option>Japan</option>
+                  <option>China</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required />
+              </div>
+              <div class="form-group">
+                <label for="whatsapp">WhatsApp Number</label>
+                <input type="tel" id="whatsapp" name="whatsapp" placeholder="+91-XXXXXXXXXX" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="service">Select Service *</label>
+              <select id="service" name="service" required>
+                <option value="">Choose a service</option>
+                <option>Scopus Journal Publication</option>
+                <option>SCI / SCIE Journal Targeting</option>
+                <option>Web of Science Support</option>
+                <option>Q1 / Q2 Journal Identification</option>
+                <option>Manuscript Structuring & Editing</option>
+                <option>Plagiarism Reduction & Quality Check</option>
+                <option>Statistical Data Analysis</option>
+                <option>Thesis & Dissertation Formatting</option>
+                <option>Patent & Copyright Filing</option>
+                <option>Conference Paper Support</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Your Message</label>
+              <textarea id="message" name="message" rows="4"
+                placeholder="Describe your research topic and requirements..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="manuscript" class="file-label">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Attach Manuscript (PDF, DOC)</span>
+                <input type="file" id="manuscript" name="manuscript" accept=".pdf,.doc,.docx" />
+                <span class="file-name" id="fileName">No file chosen</span>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-glow btn-full" id="submitBtn">
+              <span class="btn-text"><i class="fas fa-paper-plane"></i> Submit Consultation Request</span>
+              <span class="btn-loader" style="display:none;"><i class="fas fa-circle-notch fa-spin"></i>
+                Submitting...</span>
+            </button>
+          </form>
+          <!-- Success Overlay -->
+          <div class="form-success" id="formSuccess">
+            <div class="success-checkmark">
+              <svg viewBox="0 0 52 52">
+                <circle cx="26" cy="26" r="25" fill="none" />
+                <path fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+              </svg>
+            </div>
+            <h3>Thank You!</h3>
+            <p>Your consultation request has been submitted successfully.<br />Our team will contact you within 24
+              hours.</p>
+            <button class="btn btn-outline-dark"
+              onclick="document.getElementById('formSuccess').classList.remove('active')">Submit Another</button>
+          </div>
+        </div>
+        <div class="contact-info">
+          <div class="contact-info-card">
+            <h3>Global Contact Details</h3>
+            <div class="contact-detail">
+              <div class="contact-detail-icon"><i class="fas fa-envelope"></i></div>
+              <div>
+                <strong>International Support Email</strong>
+                <p>info@jabrpublication.com</p>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-detail-icon"><i class="fas fa-phone-alt"></i></div>
+              <div>
+                <strong>Global Helpline</strong>
+                <p>+91-XXXX-XXXXXX</p>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-detail-icon"><i class="fab fa-whatsapp"></i></div>
+              <div>
+                <strong>WhatsApp Chat</strong>
+                <p>+91-XXXX-XXXXXX</p>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-detail-icon"><i class="fas fa-clock"></i></div>
+              <div>
+                <strong>Working Hours (GMT +5:30)</strong>
+                <p>Mon – Sat: 9:00 AM – 7:00 PM IST</p>
+              </div>
+            </div>
+            <div class="contact-socials">
+              <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#" aria-label="ResearchGate"><i class="fab fa-researchgate"></i></a>
+              <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+              <a href="#" aria-label="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+            </div>
+          </div>
+          <div class="contact-map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.0!2d80.2!3d13.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDAw&output=embed"
+              width="100%" height="220" style="border:0;border-radius:12px;" allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade" title="JABR Location">
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="footer-logo">
+            <img src="logo.jpeg" alt="JABR" class="footer-logo-img" />
+            <div class="logo-text">
+              <span class="logo-brand">JABR</span>
+              <span class="logo-sub">Publication Consultancy</span>
+            </div>
+          </div>
+          <p>A global academic research consultancy dedicated to helping scholars publish in high-impact indexed
+            journals with integrity and excellence.</p>
+          <div class="footer-socials">
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" aria-label="ResearchGate"><i class="fab fa-researchgate"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Our Services</h4>
+          <ul>
+            <li><a href="#services">Scopus Journal Publication</a></li>
+            <li><a href="#services">SCI / SCIE Targeting</a></li>
+            <li><a href="#services">Web of Science Support</a></li>
+            <li><a href="#services">Manuscript Editing</a></li>
+            <li><a href="#services">Statistical Analysis</a></li>
+            <li><a href="#services">Patent Filing</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#process">Our Process</a></li>
+            <li><a href="#team">Team & Partners</a></li>
+            <li><a href="#blog">Blog & Insights</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Info</h4>
+          <ul class="footer-contact">
+            <li><i class="fas fa-envelope"></i> info@jabrpublication.com</li>
+            <li><i class="fas fa-phone"></i> +91-XXXX-XXXXXX</li>
+            <li><i class="fab fa-whatsapp"></i> +91-XXXX-XXXXXX</li>
+            <li><i class="fas fa-clock"></i> Mon–Sat, 9AM–7PM IST</li>
+          </ul>
+          <!-- Newsletter -->
+          <div class="newsletter">
+            <h4>Newsletter</h4>
+            <form class="newsletter-form" id="newsletterForm">
+              <input type="email" placeholder="Enter your email" required />
+              <button type="submit"><i class="fas fa-paper-plane"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Disclaimer</a>
+        </div>
+        <p>© 2026 JABR Publication Consultancy – Global Research Support. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp Button -->
+  <a href="https://wa.me/91XXXXXXXXXX" class="whatsapp-float" target="_blank" rel="noopener"
+    aria-label="Chat on WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+    <span class="whatsapp-tooltip">Chat with us</span>
+  </a>
+
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
