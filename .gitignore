@@ -1,0 +1,99 @@
+# ========================================
+# JABR Publication Consultancy
+# Professional .gitignore Configuration
+# ========================================
+
+# ========== ENVIRONMENT & SECRETS ==========
+.env
+.env.local
+.env.*.local
+.env.production
+secrets.json
+credentials.json
+*.pem
+*.key
+*.pfx
+*.p12
+
+# ========== NODE & DEPENDENCIES ==========
+node_modules/
+npm-debug.log
+npm-error.log
+yarn-error.log
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ========== BUILD & ARTIFACTS ==========
+dist/
+build/
+*.bundle.js
+*.min.js
+*.min.css
+.next/
+out/
+
+# ========== SYSTEM FILES ==========
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.env.swp
+
+# ========== LOGS & DEBUGGING ==========
+*.log
+logs/
+*.trace
+debug.log
+lerna-debug.log
+
+# ========== DATABASE & DATA ==========
+data/contacts.json
+data/newsletter.json
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+uploads/
+.mongodb/
+*.dump
+
+# ========== SENSITIVE PROJECT FILES ==========
+.git/config
+.gitconfig
+SSH/
+private_keys/
+api-keys/
+config/private.js
+
+# ========== IDE TEMPORARY FILES ==========
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+.DS_Store
+
+# ========== OS SPECIFIC ==========
+$RECYCLE.BIN/
+desktop.ini
+.Thumbs.db
+._*
+
+# ========== TEST & COVERAGE ==========
+coverage/
+.nyc_output/
+*.lcov
+
+# ========== DEPLOYMENT ==========
+.netlify/
+.vercel/
+dist/
+build/
+
+# ========== BACKUPS ==========
+*.backup
+*.bak
+*.tmp
+~*

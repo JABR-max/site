@@ -1,0 +1,70 @@
+# ========================================
+# JABR Publication Consultancy
+# SEO Robots Configuration
+# ========================================
+# This file tells search engines how to crawl your website
+# More info: https://www.robotstxt.org/
+
+# Default rules for all bots
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /config/
+Disallow: /middleware/
+Disallow: /uploads/
+Disallow: /data/
+Disallow: /.env
+Disallow: /.env.*
+Disallow: /node_modules/
+Disallow: /*.json
+Disallow: /.*
+
+# Crawl delay (1 request per 2 seconds)
+Crawl-delay: 2
+
+# Request-rate (requests per second)
+Request-rate: 0.5
+
+# Sitemap location (helps search engines discover all pages)
+Sitemap: https://jabrpublication.com/sitemap.xml
+
+# ========== SPECIFIC BOT RULES ==========
+
+# Google
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /config/
+Crawl-delay: 0
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /config/
+Crawl-delay: 1
+
+# Meta/Facebook
+User-agent: facebookexternalhit
+Allow: /
+
+# Twitter
+User-agent: Twitterbot
+Allow: /
+
+# LinkedIn
+User-agent: LinkedInBot
+Allow: /
+
+# Deny bad bots and scrapers
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

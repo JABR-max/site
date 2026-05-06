@@ -1,146 +1,265 @@
-/* ========================================
-   JABR Publication Consultancy
-   Node.js Backend Server
-   ======================================== */
+/**
+ * ========================================
+ * JABR Publication Consultancy
+ * Enterprise-Grade Node.js Backend Server
+ * ========================================
+ * 
+ * SECURITY FEATURES:
+ * ✅ Security headers (CSP, HSTS, X-Frame-Options, etc.)
+ * ✅ Input validation & sanitization
+ * ✅ Rate limiting
+ * ✅ CORS protection
+ * ✅ File upload restrictions
+ * ✅ Environment variable management
+ * ✅ Error handling & logging
+ * ✅ Production-ready architecture
+ * 
+ * DEPLOYMENT NOTES:
+ * - For Netlify: Use serverless functions in /netlify/functions/
+ * - For traditional hosting: Run with Node.js
+ * - Set environment variables in .env (never commit)
+ * - Use database instead of JSON files in production
+ */
+
+require('dotenv').config();
 
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises;
 
+// ========== SECURITY MIDDLEWARE ==========
+const securityHeaders = require('./middleware/security-headers');
+const rateLimiter = require('./middleware/rate-limit');
+const corsMiddleware = require('./middleware/cors');
+
+// ========== API ROUTES ==========
+const contactApiRoute = require('./api/contact');
+const newsletterApiRoute = require('./api/newsletter');
+
+// ========== CONFIGURATION ==========
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// Ensure uploads and data directories exist
 const uploadsDir = path.join(__dirname, 'uploads');
 const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-// Initialize data files
-const contactsFile = path.join(dataDir, 'contacts.json');
-const newsletterFile = path.join(dataDir, 'newsletter.json');
-if (!fs.existsSync(contactsFile)) fs.writeFileSync(contactsFile, '[]');
-if (!fs.existsSync(newsletterFile)) fs.writeFileSync(newsletterFile, '[]');
+// ========== DIRECTORY INITIALIZATION ==========
+(async () => {
+  try {
+    await fs.mkdir(uploadsDir, { recursive: true });
+    await fs.mkdir(dataDir, { recursive: true });
+  } catch (err) {
+    console.error('Failed to create directories:', err);
+  }
+})();
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname));
+// ========== GLOBAL MIDDLEWARE ==========
 
-// File upload config
+// Security headers (applies to all routes)
+app.use(securityHeaders);
+
+// Parse JSON payloads (with size limit)
+app.use(express.json({ limit: '10mb' }));
+
+// Parse URL-encoded payloads
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// CORS protection
+app.use(corsMiddleware);
+
+// Rate limiting
+app.use(rateLimiter);
+
+// ========== FILE UPLOAD CONFIGURATION ==========
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadsDir),
-    filename: (req, file, cb) => {
-        const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
-        cb(null, uniqueName);
+  destination: async (req, file, cb) => {
+    try {
+      await fs.mkdir(uploadsDir, { recursive: true });
+      cb(null, uploadsDir);
+    } catch (err) {
+      cb(err);
     }
+  },
+  filename: (req, file, cb) => {
+    // Generate secure filename
+    const uniqueId = Date.now() + '-' + Math.random().toString(36).substring(7);
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `${uniqueId}${ext}`);
+  }
 });
+
 const upload = multer({
-    storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
-    fileFilter: (req, file, cb) => {
-        const allowed = ['.pdf', '.doc', '.docx'];
-        const ext = path.extname(file.originalname).toLowerCase();
-        if (allowed.includes(ext)) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only PDF, DOC, and DOCX files are allowed'));
-        }
+  storage,
+  limits: {
+    fileSize: parseInt(process.env.MAX_FILE_SIZE_MB || 10) * 1024 * 1024
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = (process.env.ALLOWED_FILE_TYPES || 'pdf,doc,docx').split(',');
+    const ext = path.extname(file.originalname).toLowerCase().slice(1);
+
+    if (allowedTypes.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('File type not allowed'));
     }
+  }
 });
 
-// ---- API: Contact Form ----
-app.post('/api/contact', upload.single('manuscript'), (req, res) => {
-    try {
-        const { fullName, country, email, whatsapp, service, message } = req.body;
+// ========== STATIC FILES ==========
+// Serve public assets (CSS, JS, images)
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d',
+  etag: false
+}));
 
-        if (!fullName || !country || !email || !service) {
-            return res.status(400).json({ error: 'Required fields missing' });
-        }
-
-        const contact = {
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-            fullName,
-            country,
-            email,
-            whatsapp: whatsapp || '',
-            service,
-            message: message || '',
-            manuscript: req.file ? req.file.filename : null,
-            submittedAt: new Date().toISOString(),
-            status: 'new'
-        };
-
-        // Append to contacts.json
-        const contacts = JSON.parse(fs.readFileSync(contactsFile, 'utf8'));
-        contacts.push(contact);
-        fs.writeFileSync(contactsFile, JSON.stringify(contacts, null, 2));
-
-        console.log(`✅ New contact: ${fullName} (${email}) — ${service}`);
-
-        res.json({ success: true, message: 'Thank you! We will contact you within 24 hours.', id: contact.id });
-    } catch (err) {
-        console.error('Contact form error:', err.message);
-        res.status(500).json({ error: 'Server error. Please try again.' });
+// Serve root HTML files
+app.use(express.static(__dirname, {
+  extensions: ['html'],
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
     }
+  }
+}));
+
+// ========== API ROUTES ==========
+
+/**
+ * POST /api/contact
+ * Contact form submission with file upload
+ */
+app.post('/api/contact', upload.single('manuscript'), contactApiRoute);
+
+/**
+ * POST /api/newsletter
+ * Newsletter subscription
+ */
+app.post('/api/newsletter', newsletterApiRoute);
+
+/**
+ * DEPRECATED: Admin endpoints removed for security
+ * These endpoints exposed sensitive customer data
+ * Use proper admin dashboard with authentication instead
+ * 
+ * To access contact/subscriber data:
+ * 1. Implement JWT authentication
+ * 2. Create secure admin dashboard
+ * 3. Use database instead of JSON files
+ * 4. Add audit logging
+ */
+
+// ========== HEALTH CHECK ENDPOINT ==========
+/**
+ * GET /api/health
+ * Health check for monitoring
+ */
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    environment: NODE_ENV
+  });
 });
 
-// ---- API: Newsletter ----
-app.post('/api/newsletter', (req, res) => {
-    try {
-        const { email } = req.body;
-        if (!email || !email.includes('@')) {
-            return res.status(400).json({ error: 'Valid email required' });
-        }
+// ========== ERROR HANDLING ==========
 
-        const subscribers = JSON.parse(fs.readFileSync(newsletterFile, 'utf8'));
-        if (subscribers.find(s => s.email === email)) {
-            return res.json({ success: true, message: 'Already subscribed!' });
-        }
-
-        subscribers.push({ email, subscribedAt: new Date().toISOString() });
-        fs.writeFileSync(newsletterFile, JSON.stringify(subscribers, null, 2));
-
-        console.log(`📧 New subscriber: ${email}`);
-        res.json({ success: true, message: 'Subscribed successfully!' });
-    } catch (err) {
-        console.error('Newsletter error:', err.message);
-        res.status(500).json({ error: 'Server error' });
-    }
+// Handle 404 - Not Found
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({
+      success: false,
+      error: 'API endpoint not found'
+    });
+  }
+  next();
 });
 
-// ---- API: Get all contacts (admin) ----
-app.get('/api/contacts', (req, res) => {
-    try {
-        const contacts = JSON.parse(fs.readFileSync(contactsFile, 'utf8'));
-        res.json(contacts);
-    } catch (err) {
-        res.status(500).json({ error: 'Could not read contacts' });
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+
+  // Multer errors
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'FILE_TOO_LARGE') {
+      return res.status(413).json({
+        success: false,
+        error: 'File size exceeds limit'
+      });
     }
+    return res.status(400).json({
+      success: false,
+      error: 'File upload error'
+    });
+  }
+
+  // Generic error response
+  return res.status(500).json({
+    success: false,
+    error: NODE_ENV === 'production'
+      ? 'Server error. Please try again later.'
+      : err.message
+  });
 });
 
-// ---- API: Get all newsletter subscribers (admin) ----
-app.get('/api/subscribers', (req, res) => {
-    try {
-        const subscribers = JSON.parse(fs.readFileSync(newsletterFile, 'utf8'));
-        res.json(subscribers);
-    } catch (err) {
-        res.status(500).json({ error: 'Could not read subscribers' });
-    }
-});
-
-// ---- Serve frontend ----
+// ========== SPA FALLBACK ==========
+// Serve index.html for all non-API routes (SPA support)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'), (err) => {
+    if (err) {
+      res.status(500).json({ error: 'Could not load application' });
+    }
+  });
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`\n🚀 JABR Publication Consultancy Server`);
-    console.log(`   Running on: http://localhost:${PORT}`);
-    console.log(`   Contact API: POST /api/contact`);
-    console.log(`   Newsletter API: POST /api/newsletter`);
-    console.log(`   Contacts List: GET /api/contacts`);
-    console.log(`   Subscribers List: GET /api/subscribers\n`);
+// ========== SERVER STARTUP ==========
+const server = app.listen(PORT, HOST, () => {
+  const timestamp = new Date().toISOString();
+  console.log(`
+╔════════════════════════════════════════════════════════╗
+║   🚀 JABR Publication Consultancy Server              ║
+║                                                        ║
+║   Status: Running ✓                                    ║
+║   Environment: ${NODE_ENV.padEnd(38)}║
+║   Host: ${HOST.padEnd(45)}║
+║   Port: ${PORT}${' '.repeat(45 - PORT.toString().length)}║
+║   Time: ${timestamp.padEnd(46)}║
+║                                                        ║
+║   Secure API Endpoints:                                ║
+║   • POST /api/contact (contact form)                   ║
+║   • POST /api/newsletter (newsletter subscription)     ║
+║   • GET  /api/health (health check)                    ║
+║                                                        ║
+║   Security Features Enabled:                           ║
+║   ✓ Security headers (CSP, HSTS, etc.)                 ║
+║   ✓ Rate limiting                                      ║
+║   ✓ Input validation & sanitization                    ║
+║   ✓ CORS protection                                    ║
+║   ✓ File upload restrictions                           ║
+║                                                        ║
+║   Documentation: See docs/SECURITY.md                  ║
+║                                                        ║
+╚════════════════════════════════════════════════════════╝
+  `);
 });
+
+// ========== GRACEFUL SHUTDOWN ==========
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received. Shutting down gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
+
+module.exports = app;
