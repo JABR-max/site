@@ -58,6 +58,7 @@ function initializeEmailService() {
  * @param {string} mailOptions.subject - Email subject
  * @param {string} mailOptions.html - HTML email body
  * @param {string} mailOptions.text - Plain text email body
+ * @param {Array} mailOptions.attachments - Optional file attachments (array of objects with {filename, path})
  * @returns {Promise} Email send result
  */
 async function sendEmail(mailOptions) {
@@ -77,7 +78,7 @@ async function sendEmail(mailOptions) {
       ...mailOptions
     });
 
-    console.log(`✅ Email sent: ${mailOptions.to}`);
+    console.log(`✅ Email sent: ${mailOptions.to}${mailOptions.attachments ? ` (with ${mailOptions.attachments.length} attachment(s))` : ''}`);
     return result;
   } catch (error) {
     console.error('❌ Email send failed:', error.message);
@@ -140,7 +141,7 @@ function generateAdminEmailTemplate(contact) {
           
           <div class="field">
             <div class="field-label">👤 Full Name</div>
-            <div class="field-value"><strong>${contact.fullName || 'N/A'}</strong></div>
+            <div class="field-value"><strong>${contact.fullName || 'Not provided'}</strong></div>
           </div>
 
           <div class="field">
@@ -162,6 +163,11 @@ function generateAdminEmailTemplate(contact) {
             <div class="field-label">💼 Service Requested</div>
             <div class="field-value"><span class="badge">${contact.service || 'General Inquiry'}</span></div>
           </div>
+
+          ${contact.manuscript ? `<div class="field">
+            <div class="field-label">📎 Attached Manuscript</div>
+            <div class="field-value"><span class="badge">✓ PDF/DOC Attached</span></div>
+          </div>` : ''}
         </div>
 
         <div class="section">
@@ -172,9 +178,9 @@ function generateAdminEmailTemplate(contact) {
         <div class="section">
           <p class="section-title">Quick Actions:</p>
           <div class="action-buttons">
-            <a href="mailto:${contact.email}?subject=Re: Your JABR Consultation Request - ${contact.fullName.split(' ')[0]}" class="action-link">💬 Reply to ${contact.fullName.split(' ')[0]}</a>
+            <a href="mailto:${contact.email}?subject=Re: Your JABR Consultation Request" class="action-link">💬 Reply to Client</a>
             <a href="tel:${contact.phone}" class="action-link">📞 Call</a>
-            <a href="https://wa.me/${contact.phone.replace(/\\D/g, '')}" class="action-link">💬 WhatsApp</a>
+            <a href="https://wa.me/${(contact.phone || '').replace(/\D/g, '')}" class="action-link">💬 WhatsApp</a>
           </div>
         </div>
 
@@ -207,7 +213,8 @@ function generateAdminEmailTemplate(contact) {
  * @returns {string} HTML email body
  */
 function generateClientEmailTemplate(contact) {
-  const clientName = contact.fullName.split(' ')[0];
+  const fullName = contact.fullName || 'Valued Client';
+  const clientName = fullName.split(' ')[0] || 'Friend';
   
   return `
     <!DOCTYPE html>

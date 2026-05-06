@@ -209,7 +209,7 @@ app.use((err, req, res, next) => {
 
 // ========== SPA FALLBACK ==========
 // Serve index.html for all non-API routes (SPA support)
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'), (err) => {
     if (err) {
       res.status(500).json({ error: 'Could not load application' });

@@ -156,12 +156,27 @@ module.exports = async (req, res) => {
       const adminHtmlTemplate = generateAdminEmailTemplate(contact);
       const adminEmail = process.env.ADMIN_EMAIL || 'jabrpublicationconsultancy@gmail.com';
 
-      await sendEmail({
+      // Prepare email options
+      const adminEmailOptions = {
         to: adminEmail,
         subject: `🎯 New Consultation Request - ${sanitized.fullName} (${sanitized.service})`,
         html: adminHtmlTemplate,
         text: `New consultation request from ${sanitized.fullName} (${sanitized.email}). Phone: ${sanitized.phone || 'Not provided'}`
-      });
+      };
+
+      // Attach manuscript if provided
+      if (manuscriptFile) {
+        const manuscriptPath = path.join(__dirname, '../uploads', manuscriptFile);
+        adminEmailOptions.attachments = [
+          {
+            filename: manuscriptFile,
+            path: manuscriptPath
+          }
+        ];
+        console.log(`📎 Attaching manuscript: ${manuscriptFile}`);
+      }
+
+      await sendEmail(adminEmailOptions);
 
       contact.adminNotified = true;
       console.log(`✅ Admin notification sent to ${adminEmail}`);
