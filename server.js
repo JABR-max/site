@@ -33,6 +33,9 @@ const securityHeaders = require('./middleware/security-headers');
 const rateLimiter = require('./middleware/rate-limit');
 const corsMiddleware = require('./middleware/cors');
 
+// ========== EMAIL SERVICE ==========
+const { initializeEmailService } = require('./config/email');
+
 // ========== API ROUTES ==========
 const contactApiRoute = require('./api/contact');
 const newsletterApiRoute = require('./api/newsletter');
@@ -217,6 +220,11 @@ app.get('*', (req, res) => {
 // ========== SERVER STARTUP ==========
 const server = app.listen(PORT, HOST, () => {
   const timestamp = new Date().toISOString();
+  
+  // Initialize email service
+  const emailService = initializeEmailService();
+  const emailStatus = emailService ? '✓ Configured' : '⚠ Not configured';
+  
   console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║   🚀 JABR Publication Consultancy Server              ║
@@ -232,14 +240,19 @@ const server = app.listen(PORT, HOST, () => {
 ║   • POST /api/newsletter (newsletter subscription)     ║
 ║   • GET  /api/health (health check)                    ║
 ║                                                        ║
+║   Email Service: ${emailStatus.padEnd(41)}║
+║   Admin Email: ${(process.env.ADMIN_EMAIL || 'not set').padEnd(37)}║
+║                                                        ║
 ║   Security Features Enabled:                           ║
 ║   ✓ Security headers (CSP, HSTS, etc.)                 ║
 ║   ✓ Rate limiting                                      ║
 ║   ✓ Input validation & sanitization                    ║
 ║   ✓ CORS protection                                    ║
 ║   ✓ File upload restrictions                           ║
+║   ✓ Email notifications (if configured)                ║
 ║                                                        ║
 ║   Documentation: See docs/SECURITY.md                  ║
+║                  See docs/EMAIL_SETUP.md               ║
 ║                                                        ║
 ╚════════════════════════════════════════════════════════╝
   `);

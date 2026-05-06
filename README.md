@@ -16,6 +16,8 @@
 - **Security**: [Security Architecture](docs/SECURITY.md)
 - **Deployment**: [Deployment Guide](docs/DEPLOYMENT.md)
 - **Architecture**: [Technical Architecture](docs/ARCHITECTURE.md)
+- **Email Setup**: [Email Configuration](docs/EMAIL_SETUP.md)
+- **Implementation**: [Implementation Guide](docs/IMPLEMENTATION.md)
 
 ---
 
@@ -39,6 +41,8 @@ JABR Publication Consultancy is a professional, secure, enterprise-grade web pla
 - 🔐 **Environment Management** — .env configuration template
 - 📊 **Monitoring Ready** — Health checks, logging infrastructure
 - 🛡️ **API Security** — Rate limiting, input sanitization, CORS protection
+- 📧 **Email Integration** — Secure contact form with automatic email notifications (Gmail/Office365/SendGrid)
+- ✉️ **Professional Templates** — Auto-reply to users + admin notifications with company branding
 
 ---
 
@@ -87,16 +91,22 @@ cd jabr-consultancy
 # 2. Install dependencies
 npm install
 
-# 3. Configure environment
-cp .env.example .env
-# Edit .env with your settings
+# 3. Setup email configuration
+node setup-env.js
+# Interactive setup for Gmail, Office365, or custom SMTP
 
-# 4. Start development server
+# 4. Test email
+node test-email.js
+# Verify email service is working
+
+# 5. Start development server
 npm start
 
-# 5. Open browser
+# 6. Open browser
 # Visit http://localhost:3000
 ```
+
+**Email Setup** — The contact form requires email configuration to send notifications. See [Email Setup Guide](docs/EMAIL_SETUP.md) for detailed instructions.
 
 ### Production Deployment
 
@@ -162,8 +172,20 @@ Response:
   {
     "success": true,
     "message": "Thank you for contacting...",
-    "contactId": "abc123"
+    "contactId": "abc123",
+    "confirmationEmail": "user@example.com",
+    "emailStatus": {
+      "clientConfirmation": true,
+      "adminNotification": true
+    }
   }
+
+What Happens:
+  1. Form is validated and sanitized
+  2. Contact record is stored locally (backup)
+  3. Confirmation email sent to user
+  4. Admin notification sent to ADMIN_EMAIL
+  5. Success response returned with contact ID
 ```
 
 ### Newsletter Subscription
@@ -199,6 +221,8 @@ Response:
 - **[Architecture Guide](docs/ARCHITECTURE.md)** — Technical overview, tech stack, roadmap
 - **[Deployment Guide](docs/DEPLOYMENT.md)** — Setup, configuration, deployment steps
 - **[Security Architecture](docs/SECURITY.md)** — Security features, threat model, best practices
+- **[Email Setup Guide](docs/EMAIL_SETUP.md)** — Gmail, Office365, SendGrid, custom SMTP configuration
+- **[Implementation Guide](docs/IMPLEMENTATION.md)** — Complete system architecture, how everything works, testing & troubleshooting
 
 ### For Operations
 - **Health Monitoring** — `/api/health` endpoint
@@ -253,20 +277,34 @@ Create `.env` file from `.env.example`:
 
 ```bash
 cp .env.example .env
+# OR use interactive setup
+node setup-env.js
 ```
 
 Key variables:
 ```
 NODE_ENV=production
 PORT=3000
+
+# Email Configuration (REQUIRED for contact form)
+EMAIL_SERVICE=smtp
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-specific-password
+EMAIL_FROM=noreply@jabrpublication.com
+ADMIN_EMAIL=jabrpublicationconsultancy@gmail.com
+
+# Security Keys
 API_SECRET_KEY=your-secret-key
 JWT_SECRET=your-jwt-secret
-SMTP_HOST=smtp.gmail.com
-SMTP_USER=your-email@gmail.com
 CORS_ORIGIN=https://jabrpublication.com
 ```
 
-For complete list, see `.env.example`.
+For complete list and email service options, see `.env.example` and [Email Setup Guide](docs/EMAIL_SETUP.md).
+
+**⚠️ Important**: Never commit `.env` file. It's in `.gitignore` for your security.
 
 ### Netlify Configuration
 
@@ -350,14 +388,17 @@ Before production deployment:
 ## 📞 Support
 
 ### Resources
-- **Email**: info@jabrpublication.com
-- **Phone**: +91-XXXX-XXXXXX
+- **Email**: jabrpublicationconsultancy@gmail.com
+- **Phone**: +91 8309992766
 - **Website**: https://jabrpublication.com
+- **Hours**: Mon–Sat, 9:00 AM – 7:00 PM IST
 
 ### Documentation
 - Security: [docs/SECURITY.md](docs/SECURITY.md)
 - Deployment: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 - Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Email Setup: [docs/EMAIL_SETUP.md](docs/EMAIL_SETUP.md)
+- Implementation: [docs/IMPLEMENTATION.md](docs/IMPLEMENTATION.md)
 
 ---
 
@@ -370,8 +411,8 @@ Proprietary — All rights reserved © 2026 JABR Publication Consultancy
 ## 🎯 Roadmap
 
 ### v2.1 (Next Quarter)
+- ✅ Email service integration (SendGrid/Nodemailer) — COMPLETED
 - Database integration (MongoDB/PostgreSQL)
-- Email service integration (SendGrid)
 - JWT authentication
 - Admin dashboard
 - Automated testing
