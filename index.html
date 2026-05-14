@@ -8,6 +8,7 @@
   
   <!-- ========== SECURITY HEADERS ========== -->
   <!-- Content Security Policy (CSP) - Prevents inline script injection -->
+  <!-- Note: frame-ancestors is ignored in meta tags and set via HTTP headers -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com;
@@ -16,7 +17,7 @@
     img-src 'self' data: https: blob:;
     media-src 'self' https:;
     connect-src 'self' https: ws: wss:;
-    frame-ancestors 'none';
+    frame-src https://www.google.com https://maps.google.com;
     base-uri 'self';
     form-action 'self'
   " />
@@ -528,7 +529,7 @@
 
           <div class="team-card">
             <div class="team-card-image">
-              <img src="assets/Yogeshwaran.jpg" alt="Mr. S. Yogeshwaran" class="team-avatar-img" />
+              <img src="assets/yogesh.png" alt="Mr. S. Yogeshwaran" class="team-avatar-img" />
               <div class="team-socials">
                 <a href="mailto:jabrpublicationconsultancy@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
                 <a href="tel:+918309992766" title="Contact"><i class="fas fa-phone"></i></a>

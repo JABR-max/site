@@ -38,7 +38,6 @@ const { initializeEmailService } = require('./config/email');
 
 // ========== API ROUTES ==========
 const contactApiRoute = require('./api/contact');
-const newsletterApiRoute = require('./api/newsletter');
 
 // ========== CONFIGURATION ==========
 const app = express();
@@ -137,12 +136,6 @@ app.use(express.static(__dirname, {
 app.post('/api/contact', upload.single('manuscript'), contactApiRoute);
 
 /**
- * POST /api/newsletter
- * Newsletter subscription
- */
-app.post('/api/newsletter', newsletterApiRoute);
-
-/**
  * DEPRECATED: Admin endpoints removed for security
  * These endpoints exposed sensitive customer data
  * Use proper admin dashboard with authentication instead
@@ -219,6 +212,10 @@ app.use((req, res) => {
 
 // ========== SERVER STARTUP ==========
 const server = app.listen(PORT, HOST, () => {
+  // Set request timeout for large file uploads
+  const requestTimeout = parseInt(process.env.FORM_SUBMIT_TIMEOUT_MS || 60000) * 1.5;
+  server.setTimeout(requestTimeout);
+  server.keepAliveTimeout = Math.max(requestTimeout + 5000, 65000);
   const timestamp = new Date().toISOString();
   
   // Initialize email service
@@ -237,7 +234,6 @@ const server = app.listen(PORT, HOST, () => {
 ║                                                        ║
 ║   Secure API Endpoints:                                ║
 ║   • POST /api/contact (contact form)                   ║
-║   • POST /api/newsletter (newsletter subscription)     ║
 ║   • GET  /api/health (health check)                    ║
 ║                                                        ║
 ║   Email Service: ${emailStatus.padEnd(41)}║

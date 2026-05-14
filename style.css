@@ -1749,13 +1749,16 @@ textarea {
 }
 
 .team-avatar-img {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: var(--radius-lg);
   object-fit: cover;
+  object-position: center top;
   box-shadow: 0 8px 20px rgba(13, 148, 136, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 2px solid rgba(13, 148, 136, 0.15);
+  border: 3px solid rgba(13, 148, 136, 0.2);
+  display: block;
+  margin: 0 auto 20px;
 }
 
 .team-card:hover .team-avatar-img {

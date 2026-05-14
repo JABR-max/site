@@ -7,28 +7,27 @@
  */
 
 module.exports = (req, res, next) => {
-  const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://jabrpublication.com')
-    .split(',')
-    .map(origin => origin.trim());
-
   const origin = req.headers.origin;
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  
+  // Get allowed origins from environment
+  const allowedOriginsList = (process.env.ALLOWED_ORIGINS || 'https://jabrpublication.com,http://localhost:3000,http://127.0.0.1:3000')
+    .split(',')
+    .map(o => o.trim());
 
-  // Check if origin is allowed
-  if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+  // Allow any origin in development, whitelist in production
+  if (!origin || isDevelopment || allowedOriginsList.includes(origin) || allowedOriginsList.includes('*')) {
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
   }
 
-  // Only allow specific HTTP methods
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  // Allow methods
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
 
-  // Only allow specific headers
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // Allow headers
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
 
-  // Don't allow credentials from different origins
-  res.setHeader('Access-Control-Allow-Credentials', 'false');
-
-  // Cache preflight requests
-  res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
+  // Cache preflight requests for 24 hours
+  res.setHeader('Access-Control-Max-Age', '86400');
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {

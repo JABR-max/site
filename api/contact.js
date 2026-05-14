@@ -166,14 +166,23 @@ module.exports = async (req, res) => {
 
       // Attach manuscript if provided
       if (manuscriptFile) {
-        const manuscriptPath = path.join(__dirname, '../uploads', manuscriptFile);
-        adminEmailOptions.attachments = [
-          {
-            filename: manuscriptFile,
-            path: manuscriptPath
-          }
-        ];
-        console.log(`📎 Attaching manuscript: ${manuscriptFile}`);
+        const manuscriptPath = path.join(__dirname, '..', 'uploads', manuscriptFile);
+        
+        // Verify file exists before attaching
+        try {
+          await fs.access(manuscriptPath);
+          adminEmailOptions.attachments = [
+            {
+              filename: manuscriptFile,
+              path: manuscriptPath
+            }
+          ];
+          console.log(`📎 Attaching manuscript: ${manuscriptFile}`);
+        } catch (err) {
+          console.error(`⚠️ Manuscript file not found: ${manuscriptPath}`);
+          console.error(`   Expected path: ${manuscriptPath}`);
+          console.error(`   File exists check failed: ${err.message}`);
+        }
       }
 
       await sendEmail(adminEmailOptions);

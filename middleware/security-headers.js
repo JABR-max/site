@@ -20,6 +20,7 @@ module.exports = (req, res, next) => {
       "img-src 'self' data: https: blob:",
       "media-src 'self' https:",
       "connect-src 'self' https: ws: wss:",
+      "frame-src https://www.google.com https://maps.google.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

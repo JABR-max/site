@@ -88,5 +88,23 @@
     "adminNotified": true,
     "notes": "",
     "assignedTo": null
+  },
+  {
+    "id": "mp59ogl1yxltb",
+    "fullName": "John Doe",
+    "email": "john.doe@example.com",
+    "country": "US",
+    "whatsapp": "+1-234-567-8900",
+    "service": "scopus-publication",
+    "message": "I am interested in publishing my research in a Scopus indexed journal.",
+    "phone": "+1-234-567-8900",
+    "manuscript": "1778749757169-e90ztf.pdf",
+    "submittedAt": "2026-05-14T09:09:17.173Z",
+    "submittedFrom": "127.0.0.1",
+    "status": "pending",
+    "emailSent": true,
+    "adminNotified": true,
+    "notes": "",
+    "assignedTo": null
   }
 ]

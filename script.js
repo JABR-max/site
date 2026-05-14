@@ -346,10 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const formData = new FormData(contactForm);
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 120000); // 2 minutes for large files
+            
             const response = await fetch('/api/contact', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                signal: controller.signal
             });
+            clearTimeout(timeout);
 
             if (response.ok) {
                 formSuccess?.classList.add('active');
