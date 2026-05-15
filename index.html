@@ -724,7 +724,7 @@
       </div>
       <div class="contact-grid">
         <div class="contact-form-wrapper">
-          <form class="contact-form" id="contactForm" action="/api/contact" method="POST" enctype="multipart/form-data">
+          <form class="contact-form" id="contactForm">
             <div class="form-row">
               <div class="form-group">
                 <label for="fullName">Full Name *</label>
@@ -950,55 +950,106 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
+  <!-- EmailJS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <script>
+    // ========== EmailJS Configuration ==========
+    const EMAILJS_CONFIG = {
+      PUBLIC_KEY: 'T7QlNb3BbzkiEHwthNMZO',
+      SERVICE_ID: 'service_jabr',
+      TEMPLATE_ID: 'template_qcrf5xi'
+    };
 
-    emailjs.init("T7QlNb3BbzkiEHwthNMZO");
+    // Initialize EmailJS
+    emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
 
-    const contactForm = document.getElementById("contactForm");
-
-    contactForm.addEventListener("submit", async function(e) {
-
+    // ========== Contact Form Handler ==========
+    const contactForm = document.getElementById('contactForm');
+    const submitBtn = contactForm?.querySelector('#submitBtn');
+    
+    if (contactForm) {
+      contactForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-
-        try {
-
-            const response = await emailjs.sendForm(
-                "service_jabr",
-                "template_qcrf5xi",
-                this
-            );
-
-            console.log("SUCCESS!", response.status, response.text);
-
-            alert("Consultation request submitted successfully!");
-
-            contactForm.reset();
-
-            document.getElementById("fileName").innerText = "No file chosen";
-
-        } catch (error) {
-
-            console.error("FAILED...", error);
-
-            alert("Failed to send consultation request.");
-
+        
+        // Disable button to prevent duplicate submissions
+        if (submitBtn) {
+          submitBtn.disabled = true;
         }
+        
+        try {
+          // Prepare form data with file
+          const formData = new FormData(this);
+          
+          // Get values for logging
+          const fullName = formData.get('fullName') || '';
+          const email = formData.get('email') || '';
+          const service = formData.get('service') || '';
+          
+          console.log('📤 Contact form submitted');
+          console.log('   Name:', fullName);
+          console.log('   Email:', email);
+          console.log('   Service:', service);
+          
+          // 1️⃣ Send to backend API (handles file upload + data storage)
+          console.log('📨 Sending to backend...');
+          const backendResponse = await fetch('/api/contact', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
+          
+          if (!backendResponse.ok) {
+            throw new Error(`Backend error: ${backendResponse.status}`);
+          }
+          
+          const backendData = await backendResponse.json();
+          console.log('✅ Backend saved successfully');
+          console.log('   Contact ID:', backendData.contactId);
+          
+          // 2️⃣ Also send email via EmailJS (client-side email)
+          console.log('📧 Sending email via EmailJS...');
+          try {
+            const emailResponse = await emailjs.sendForm(
+              EMAILJS_CONFIG.SERVICE_ID,
+              EMAILJS_CONFIG.TEMPLATE_ID,
+              this
+            );
+            console.log('✅ Email sent successfully');
+          } catch (emailErr) {
+            console.warn('⚠️ Email sending had issues, but data was saved:', emailErr.message);
+          }
+          
+          // Show success
+          alert('✅ Consultation request submitted successfully!\n\nWe will contact you within 24 hours.');
+          
+          // Reset form
+          this.reset();
+          document.getElementById('fileName').innerText = 'No file chosen';
+          
+        } catch (error) {
+          console.error('❌ Submission error:', error.message);
+          alert('❌ Error: ' + error.message);
+        } finally {
+          // Re-enable button
+          if (submitBtn) {
+            submitBtn.disabled = false;
+          }
+        }
+      });
+    }
 
-    });
-
-    // File name preview
-
-    document.getElementById("manuscript").addEventListener("change", function () {
-
-        const fileName = this.files[0]
-            ? this.files[0].name
-            : "No file chosen";
-
-        document.getElementById("fileName").innerText = fileName;
-
-    });
+    // ========== File Preview Handler ==========
+    const fileInput = document.getElementById('manuscript');
+    if (fileInput) {
+      fileInput.addEventListener('change', function() {
+        const fileName = this.files[0]?.name || 'No file chosen';
+        document.getElementById('fileName').innerText = fileName;
+        console.log('📎 File selected:', fileName);
+      });
+    }
 
   </script>
 

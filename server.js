@@ -132,6 +132,7 @@ app.use(express.static(__dirname, {
 /**
  * POST /api/contact
  * Contact form submission with file upload
+ * Stores data and triggers admin notifications
  */
 app.post('/api/contact', upload.single('manuscript'), contactApiRoute);
 
@@ -218,7 +219,7 @@ const server = app.listen(PORT, HOST, () => {
   server.keepAliveTimeout = Math.max(requestTimeout + 5000, 65000);
   const timestamp = new Date().toISOString();
   
-  // Initialize email service
+  // Initialize email service for admin notifications
   const emailService = initializeEmailService();
   const emailStatus = emailService ? '✓ Configured' : '⚠ Not configured';
   
