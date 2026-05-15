@@ -30,9 +30,10 @@ module.exports = async (req, res) => {
       });
     }
 
-    console.log('📋 Contact submission:');
+    console.log('\n📋 ========== NEW CONTACT SUBMISSION ==========');
     console.log('   Name:', fullName);
     console.log('   Email:', email);
+    console.log('   Service:', service);
     console.log('   File:', req.file?.filename || 'None');
 
     // ========== CREATE CONTACT RECORD ==========
@@ -52,9 +53,13 @@ module.exports = async (req, res) => {
     };
 
     // ========== SAVE TO FILE ==========
+    console.log('💾 Attempting to save contact...');
     try {
       const dataDir = path.join(__dirname, '../data');
       const contactsFile = path.join(dataDir, 'contacts.json');
+      
+      console.log('   Data dir:', dataDir);
+      console.log('   File path:', contactsFile);
       
       await fs.mkdir(dataDir, { recursive: true }).catch(() => {});
       
@@ -62,35 +67,42 @@ module.exports = async (req, res) => {
       try {
         const fileData = await fs.readFile(contactsFile, 'utf8');
         allContacts = JSON.parse(fileData);
-      } catch {
+        console.log('   Loaded existing contacts:', allContacts.length);
+      } catch (e) {
+        console.log('   No existing file, starting fresh');
         allContacts = [];
       }
 
       allContacts.push(contact);
       await fs.writeFile(contactsFile, JSON.stringify(allContacts, null, 2), 'utf8');
-      console.log(`✅ Contact saved: ${contactId}`);
+      console.log(`✅ CONTACT SAVED: ${contactId}`);
       
     } catch (err) {
-      console.error('⚠️ Save error:', err.message);
+      console.error('❌ SAVE ERROR:', err.message);
+      console.error('   Stack:', err.stack);
     }
 
     // ========== SEND EMAILS ==========
+    console.log('📧 Attempting to send emails...');
+    
     try {
       // Send client confirmation
       const clientHtml = generateClientEmailTemplate(contact);
+      console.log('   Sending client email to:', email);
       await sendEmail({
         to: email,
         subject: '✓ Consultation Request Received - JABR Publication Consultancy',
         html: clientHtml,
         text: 'Thank you for contacting JABR. We will respond within 24 hours.'
       });
-      console.log(`✅ Email sent to ${email}`);
+      console.log(`✅ CLIENT EMAIL SENT: ${email}`);
     } catch (err) {
-      console.error('⚠️ Client email error:', err.message);
+      console.error(`❌ CLIENT EMAIL ERROR:`, err.message);
     }
 
     try {
       // Send admin notification
+      console.log('   Sending admin email...');
       const adminHtml = generateAdminEmailTemplate(contact);
       const adminEmail = process.env.ADMIN_EMAIL || 'jabrpublicationconsultancy@gmail.com';
       
@@ -115,10 +127,12 @@ module.exports = async (req, res) => {
       }
 
       await sendEmail(adminOptions);
-      console.log(`✅ Admin notified`);
+      console.log(`✅ ADMIN EMAIL SENT`);
     } catch (err) {
-      console.error('⚠️ Admin email error:', err.message);
+      console.error(`❌ ADMIN EMAIL ERROR:`, err.message);
     }
+    
+    console.log('========== END SUBMISSION ==========\n');
 
     // ========== RESPONSE ==========
     return res.status(201).json({
