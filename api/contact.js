@@ -3,24 +3,19 @@
  * JABR Publication Consultancy
  * Contact Form API Route
  * ========================================
- * 
- * Purpose:
- * - Store contact submissions in database/JSON
- * - Handle file uploads
- * - Email sending is handled by EmailJS on frontend
- * 
- * NOTE: EmailJS handles all email delivery to avoid Gmail issues
+ * Handles file uploads + data storage + email notifications
  */
 
 const fs = require('fs').promises;
 const path = require('path');
+const { sendEmail, generateAdminEmailTemplate, generateClientEmailTemplate } = require('../config/email');
 
 module.exports = async (req, res) => {
   try {
     const { fullName, country, email, whatsapp, service, message } = req.body;
     const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
 
-    // ========== BASIC VALIDATION ==========
+    // ========== VALIDATION ==========
     if (!fullName?.trim() || !email?.trim()) {
       return res.status(400).json({
         success: false,
@@ -31,11 +26,11 @@ module.exports = async (req, res) => {
     if (!email.includes('@')) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid email format'
+        error: 'Invalid email'
       });
     }
 
-    console.log('📋 Contact submission received:');
+    console.log('📋 Contact submission:');
     console.log('   Name:', fullName);
     console.log('   Email:', email);
     console.log('   File:', req.file?.filename || 'None');
@@ -47,24 +42,22 @@ module.exports = async (req, res) => {
       id: contactId,
       fullName: fullName.trim(),
       email: email.toLowerCase().trim(),
-      country: country?.trim() || 'Not specified',
-      whatsapp: whatsapp?.trim() || 'Not provided',
-      service: service?.trim() || 'Not specified',
+      country: country?.trim() || '',
+      whatsapp: whatsapp?.trim() || '',
+      service: service?.trim() || '',
       message: message?.trim() || '',
       manuscript: req.file?.filename || null,
       submittedAt: new Date().toISOString(),
       submittedFrom: clientIp
     };
 
-    // ========== SAVE TO JSON FILE ==========
+    // ========== SAVE TO FILE ==========
     try {
       const dataDir = path.join(__dirname, '../data');
       const contactsFile = path.join(dataDir, 'contacts.json');
       
-      // Create data directory if it doesn't exist
       await fs.mkdir(dataDir, { recursive: true }).catch(() => {});
       
-      // Read existing contacts
       let allContacts = [];
       try {
         const fileData = await fs.readFile(contactsFile, 'utf8');
@@ -73,37 +66,73 @@ module.exports = async (req, res) => {
         allContacts = [];
       }
 
-      // Add new contact
       allContacts.push(contact);
-
-      // Save updated list
-      await fs.writeFile(
-        contactsFile, 
-        JSON.stringify(allContacts, null, 2),
-        'utf8'
-      );
-
+      await fs.writeFile(contactsFile, JSON.stringify(allContacts, null, 2), 'utf8');
       console.log(`✅ Contact saved: ${contactId}`);
       
     } catch (err) {
-      console.error('⚠️ Error saving contact:', err.message);
-      // Don't fail - still return success since EmailJS handled the user notification
+      console.error('⚠️ Save error:', err.message);
     }
 
-    // ========== SUCCESS RESPONSE ==========
+    // ========== SEND EMAILS ==========
+    try {
+      // Send client confirmation
+      const clientHtml = generateClientEmailTemplate(contact);
+      await sendEmail({
+        to: email,
+        subject: '✓ Consultation Request Received - JABR Publication Consultancy',
+        html: clientHtml,
+        text: 'Thank you for contacting JABR. We will respond within 24 hours.'
+      });
+      console.log(`✅ Email sent to ${email}`);
+    } catch (err) {
+      console.error('⚠️ Client email error:', err.message);
+    }
+
+    try {
+      // Send admin notification
+      const adminHtml = generateAdminEmailTemplate(contact);
+      const adminEmail = process.env.ADMIN_EMAIL || 'jabrpublicationconsultancy@gmail.com';
+      
+      const adminOptions = {
+        to: adminEmail,
+        subject: `🎯 New Consultation - ${contact.fullName}`,
+        html: adminHtml,
+        text: `New submission from ${contact.fullName} (${contact.email})`
+      };
+
+      // Attach file if exists
+      if (req.file) {
+        const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
+        try {
+          await fs.access(filePath);
+          adminOptions.attachments = [{
+            filename: req.file.originalname,
+            path: filePath
+          }];
+          console.log(`📎 File attached: ${req.file.filename}`);
+        } catch {}
+      }
+
+      await sendEmail(adminOptions);
+      console.log(`✅ Admin notified`);
+    } catch (err) {
+      console.error('⚠️ Admin email error:', err.message);
+    }
+
+    // ========== RESPONSE ==========
     return res.status(201).json({
       success: true,
-      message: 'Consultation request received successfully',
+      message: 'Consultation request submitted successfully',
       contactId: contactId,
-      email: email,
-      note: 'Email notification sent via EmailJS'
+      email: email
     });
 
   } catch (error) {
     console.error('❌ API Error:', error.message);
     return res.status(500).json({
       success: false,
-      error: 'Server error processing submission'
+      error: 'Server error'
     });
   }
 };

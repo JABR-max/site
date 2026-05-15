@@ -950,21 +950,9 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
-  <!-- EmailJS Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
+  <!-- Contact Form Handler -->
   <script>
-    // ========== EmailJS Configuration ==========
-    const EMAILJS_CONFIG = {
-      PUBLIC_KEY: 'T7QlNb3BbzkiEHwthNMZO',
-      SERVICE_ID: 'service_jabr',
-      TEMPLATE_ID: 'template_qcrf5xi'
-    };
-
-    // Initialize EmailJS
-    emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
-
-    // ========== Contact Form Handler ==========
+    // ========== SIMPLE CONTACT FORM ==========
     const contactForm = document.getElementById('contactForm');
     const submitBtn = contactForm?.querySelector('#submitBtn');
     
@@ -972,81 +960,76 @@
       contactForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Disable button to prevent duplicate submissions
-        if (submitBtn) {
-          submitBtn.disabled = true;
-        }
-        
         try {
-          // Prepare form data with file
+          // Disable button
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            const btnText = submitBtn.querySelector('.btn-text');
+            const btnLoader = submitBtn.querySelector('.btn-loader');
+            if (btnText && btnLoader) {
+              btnText.style.display = 'none';
+              btnLoader.style.display = 'inline-flex';
+            }
+          }
+          
+          // Get form data with file
           const formData = new FormData(this);
           
-          // Get values for logging
-          const fullName = formData.get('fullName') || '';
-          const email = formData.get('email') || '';
-          const service = formData.get('service') || '';
+          console.log('📤 Submitting form with file...');
+          console.log('   Name:', formData.get('fullName'));
+          console.log('   Email:', formData.get('email'));
+          console.log('   File:', formData.get('manuscript')?.name || 'None');
           
-          console.log('📤 Contact form submitted');
-          console.log('   Name:', fullName);
-          console.log('   Email:', email);
-          console.log('   Service:', service);
-          
-          // 1️⃣ Send to backend API (handles file upload + data storage)
-          console.log('📨 Sending to backend...');
-          const backendResponse = await fetch('/api/contact', {
+          // Send to backend
+          const response = await fetch('/api/contact', {
             method: 'POST',
-            body: formData,
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
+            body: formData
           });
           
-          if (!backendResponse.ok) {
-            throw new Error(`Backend error: ${backendResponse.status}`);
+          console.log('Response status:', response.status);
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Success!');
+            console.log('   Contact ID:', data.contactId);
+            
+            alert('✅ Consultation request submitted successfully!\n\nWe will contact you within 24 hours.');
+            
+            // Reset form
+            this.reset();
+            document.getElementById('fileName').innerText = 'No file chosen';
+          } else {
+            const errorData = await response.json();
+            console.error('Error:', errorData);
+            alert('❌ Error: ' + (errorData.error || 'Please try again'));
           }
-          
-          const backendData = await backendResponse.json();
-          console.log('✅ Backend saved successfully');
-          console.log('   Contact ID:', backendData.contactId);
-          
-          // 2️⃣ Also send email via EmailJS (client-side email)
-          console.log('📧 Sending email via EmailJS...');
-          try {
-            const emailResponse = await emailjs.sendForm(
-              EMAILJS_CONFIG.SERVICE_ID,
-              EMAILJS_CONFIG.TEMPLATE_ID,
-              this
-            );
-            console.log('✅ Email sent successfully');
-          } catch (emailErr) {
-            console.warn('⚠️ Email sending had issues, but data was saved:', emailErr.message);
-          }
-          
-          // Show success
-          alert('✅ Consultation request submitted successfully!\n\nWe will contact you within 24 hours.');
-          
-          // Reset form
-          this.reset();
-          document.getElementById('fileName').innerText = 'No file chosen';
           
         } catch (error) {
-          console.error('❌ Submission error:', error.message);
+          console.error('Submission error:', error);
           alert('❌ Error: ' + error.message);
         } finally {
           // Re-enable button
           if (submitBtn) {
             submitBtn.disabled = false;
+            const btnText = submitBtn.querySelector('.btn-text');
+            const btnLoader = submitBtn.querySelector('.btn-loader');
+            if (btnText && btnLoader) {
+              btnText.style.display = 'inline-flex';
+              btnLoader.style.display = 'none';
+            }
           }
         }
       });
     }
-
-    // ========== File Preview Handler ==========
+    
+    // File preview
     const fileInput = document.getElementById('manuscript');
     if (fileInput) {
       fileInput.addEventListener('change', function() {
-        const fileName = this.files[0]?.name || 'No file chosen';
-        document.getElementById('fileName').innerText = fileName;
+        document.getElementById('fileName').innerText = this.files[0]?.name || 'No file chosen';
+      });
+    }
+  </script>
         console.log('📎 File selected:', fileName);
       });
     }
