@@ -331,57 +331,9 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     }
 
-    // ---- Contact Form ----
-    const contactForm = document.getElementById('contactForm');
-    const formSuccess = document.getElementById('formSuccess');
-    const submitBtn = document.getElementById('submitBtn');
-
-    contactForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btnText = submitBtn.querySelector('.btn-text');
-        const btnLoader = submitBtn.querySelector('.btn-loader');
-        btnText.style.display = 'none';
-        btnLoader.style.display = 'inline-flex';
-        submitBtn.disabled = true;
-
-        try {
-            const formData = new FormData(contactForm);
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 120000); // 2 minutes for large files
-            
-            const response = await fetch('/api/contact', {
-                method: 'POST',
-                body: formData,
-                signal: controller.signal
-            });
-            clearTimeout(timeout);
-
-            if (response.ok) {
-                formSuccess?.classList.add('active');
-                contactForm.reset();
-                document.getElementById('fileName').textContent = 'No file chosen';
-            } else {
-                // Fallback: just show success for demo
-                formSuccess?.classList.add('active');
-                contactForm.reset();
-            }
-        } catch (err) {
-            // If backend not available, show success anyway for demo
-            formSuccess?.classList.add('active');
-            contactForm.reset();
-        }
-
-        btnText.style.display = 'inline-flex';
-        btnLoader.style.display = 'none';
-        submitBtn.disabled = false;
-    });
-
-    // ---- File Upload Name ----
-    const fileInput = document.getElementById('manuscript');
-    const fileNameDisplay = document.getElementById('fileName');
-    fileInput?.addEventListener('change', () => {
-        fileNameDisplay.textContent = fileInput.files[0]?.name || 'No file chosen';
-    });
+    // ========== EMAILJS CONTACT FORM INTEGRATION ==========
+    // Contact form and file upload handling is done in index.html with EmailJS
+    // This keeps the code centralized and avoids conflicts
 
     // ---- Newsletter Form ----
     const newsletterForm = document.getElementById('newsletterForm');

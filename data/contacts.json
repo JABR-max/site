@@ -106,5 +106,41 @@
     "adminNotified": true,
     "notes": "",
     "assignedTo": null
+  },
+  {
+    "id": "mp5f2q1qlyv1y",
+    "fullName": "YOGESHWARAN S",
+    "email": "yogeshsakthivel0109@gmail.com",
+    "country": "IN",
+    "whatsapp": "8682007024",
+    "service": "research-consultation",
+    "message": "hi sir",
+    "phone": "8682007024",
+    "manuscript": "1778758820683-jwmfcb.pdf",
+    "submittedAt": "2026-05-14T11:40:20.702Z",
+    "submittedFrom": "127.0.0.1",
+    "status": "pending",
+    "emailSent": false,
+    "adminNotified": false,
+    "notes": "",
+    "assignedTo": null
+  },
+  {
+    "id": "mp5fhdbrli99e",
+    "fullName": "yogesh",
+    "email": "yogeshmalavai20@gmail.com",
+    "country": "IN",
+    "whatsapp": "8682007024",
+    "service": "scopus-publication",
+    "message": "jjjwjjw",
+    "phone": "8682007024",
+    "manuscript": "1778759504044-rv9202.pdf",
+    "submittedAt": "2026-05-14T11:51:44.055Z",
+    "submittedFrom": "127.0.0.1",
+    "status": "pending",
+    "emailSent": false,
+    "adminNotified": false,
+    "notes": "",
+    "assignedTo": null
   }
 ]

@@ -111,18 +111,18 @@ const upload = multer({
 });
 
 // ========== STATIC FILES ==========
-// Serve public assets (CSS, JS, images)
-app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '1d',
-  etag: false
-}));
-
-// Serve root HTML files
+// Serve frontend files (HTML, CSS, JS, assets, images)
+// Files are in root directory: index.html, style.css, script.js, assets/, logo.jpeg
 app.use(express.static(__dirname, {
-  extensions: ['html'],
-  setHeaders: (res, path) => {
-    if (path.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'public, max-age=3600');
+  maxAge: '1h',
+  setHeaders: (res, filePath) => {
+    // Cache control for different file types
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=3600'); // 1 hour for HTML
+    } else if (filePath.endsWith('.css') || filePath.endsWith('.js')) {
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day for CSS/JS
+    } else if (filePath.match(/\.(jpg|jpeg|png|gif|ico)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=604800'); // 1 week for images
     }
   }
 }));

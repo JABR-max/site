@@ -950,7 +950,60 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
-  <script src="script.js"></script>
-</body>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
+  <script>
+
+    emailjs.init("T7QlNb3BbzkiEHwthNMZO");
+
+    const contactForm = document.getElementById("contactForm");
+
+    contactForm.addEventListener("submit", async function(e) {
+
+        e.preventDefault();
+
+        try {
+
+            const response = await emailjs.sendForm(
+                "service_jabr",
+                "template_qcrf5xi",
+                this
+            );
+
+            console.log("SUCCESS!", response.status, response.text);
+
+            alert("Consultation request submitted successfully!");
+
+            contactForm.reset();
+
+            document.getElementById("fileName").innerText = "No file chosen";
+
+        } catch (error) {
+
+            console.error("FAILED...", error);
+
+            alert("Failed to send consultation request.");
+
+        }
+
+    });
+
+    // File name preview
+
+    document.getElementById("manuscript").addEventListener("change", function () {
+
+        const fileName = this.files[0]
+            ? this.files[0].name
+            : "No file chosen";
+
+        document.getElementById("fileName").innerText = fileName;
+
+    });
+
+  </script>
+
+  <!-- Main Script -->
+  <script src="script.js"></script>
+
+</body>
 </html>
