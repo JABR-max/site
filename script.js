@@ -331,24 +331,28 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     }
 
-    // ========== EMAILJS CONTACT FORM INTEGRATION (REST API) ==========
+    // ========== EMAILJS CONTACT FORM INTEGRATION (SDK) ==========
     // EmailJS Configuration
     const EMAILJS_CONFIG = {
         publicKey: 'cEsQcXQnUSyKhV9Yg',
         serviceId: 'service_jabr',
-        templateId: 'template_ekyfz1q',
-        apiUrl: 'https://api.emailjs.com/api/v1.0/email/send'
+        templateId: 'template_ekyfz1q'
     };
+
+    // Initialize EmailJS
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+    }
 
     // Form Validation
     function validateForm(formData) {
         const errors = [];
         
-        if (!formData.fullName?.trim()) errors.push('Full name is required');
-        if (!formData.email?.trim()) errors.push('Email is required');
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.push('Invalid email format');
-        if (!formData.country?.trim()) errors.push('Country is required');
-        if (!formData.service?.trim()) errors.push('Please select a service');
+        if (!formData.get('fullName')?.trim()) errors.push('Full name is required');
+        if (!formData.get('email')?.trim()) errors.push('Email is required');
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.get('email'))) errors.push('Invalid email format');
+        if (!formData.get('country')?.trim()) errors.push('Country is required');
+        if (!formData.get('service')?.trim()) errors.push('Please select a service');
         
         return errors;
     }
@@ -358,44 +362,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const contactForm = document.getElementById('contactForm');
         const submitBtn = document.getElementById('submitBtn');
         const formSuccess = document.getElementById('formSuccess');
-        const fileInput = document.getElementById('manuscript');
-        const fileNameDisplay = document.getElementById('fileName');
+
 
         if (!contactForm) {
             console.warn('Contact form not found in DOM');
             return;
         }
 
-        // File Upload Handler
-        if (fileInput) {
-            fileInput.addEventListener('change', (e) => {
-                const fileName = e.target.files[0]?.name || 'No file chosen';
-                fileNameDisplay.textContent = fileName;
-            });
-        }
 
         // Form Submit Handler
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Get form data
-            const templateParams = {
-                fullName: document.getElementById('fullName').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                country: document.getElementById('country').value.trim(),
-                whatsapp: document.getElementById('whatsapp').value.trim(),
-                service: document.getElementById('service').value.trim(),
-                message: document.getElementById('message').value.trim(),
-                manuscriptName: fileInput?.files[0]?.name || 'No file attached',
-                submissionDate: new Date().toLocaleString()
-            };
-
             // Validate form
-            const validationErrors = validateForm(templateParams);
+            const formData = new FormData(contactForm);
+            const validationErrors = validateForm(formData);
             if (validationErrors.length > 0) {
                 alert('Please fix the following:\n\n' + validationErrors.join('\n'));
                 return;
             }
+
+            // Add hidden fields for submissionDate and manuscriptName
+            let dateInput = contactForm.querySelector('input[name="submissionDate"]');
+            if (!dateInput) {
+                dateInput = document.createElement('input');
+                dateInput.type = 'hidden';
+                dateInput.name = 'submissionDate';
+                contactForm.appendChild(dateInput);
+            }
+            dateInput.value = new Date().toLocaleString();
+
+            let msNameInput = contactForm.querySelector('input[name="manuscriptName"]');
+            if (!msNameInput) {
+                msNameInput = document.createElement('input');
+                msNameInput.type = 'hidden';
+                msNameInput.name = 'manuscriptName';
+                contactForm.appendChild(msNameInput);
+            }
+            msNameInput.value = 'N/A';
 
             // Show loading state
             submitBtn.disabled = true;
@@ -405,39 +409,31 @@ document.addEventListener('DOMContentLoaded', () => {
             btnLoader.style.display = 'inline';
 
             try {
-                // Send email using REST API
-                const response = await fetch(EMAILJS_CONFIG.apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        service_id: EMAILJS_CONFIG.serviceId,
-                        template_id: EMAILJS_CONFIG.templateId,
-                        user_id: EMAILJS_CONFIG.publicKey,
-                        template_params: templateParams
-                    })
-                });
-
-                if (response.ok) {
-                    console.log('✅ Email sent successfully');
-                    
-                    // Show success overlay
-                    formSuccess.classList.add('active');
-                    
-                    // Reset form
-                    contactForm.reset();
-                    fileNameDisplay.textContent = 'No file chosen';
-                    
-                    // Auto-hide success message after 5 seconds
-                    setTimeout(() => {
-                        formSuccess.classList.remove('active');
-                    }, 5000);
-                } else {
-                    const errorText = await response.text();
-                    console.error('❌ Email send error:', errorText);
-                    alert('❌ Failed to send message. Please try again or contact us directly.');
+                if (typeof emailjs === 'undefined') {
+                    throw new Error('EmailJS SDK not loaded.');
                 }
+                
+                // Send email using EmailJS SDK
+                await emailjs.sendForm(
+                    EMAILJS_CONFIG.serviceId, 
+                    EMAILJS_CONFIG.templateId, 
+                    contactForm, 
+                    { publicKey: EMAILJS_CONFIG.publicKey }
+                );
+
+                console.log('✅ Email sent successfully');
+                
+                // Show success overlay
+                formSuccess.classList.add('active');
+                
+                // Reset form
+                contactForm.reset();
+
+                
+                // Auto-hide success message after 5 seconds
+                setTimeout(() => {
+                    formSuccess.classList.remove('active');
+                }, 5000);
             } catch (error) {
                 console.error('Form submission error:', error);
                 alert('❌ An error occurred. Please try again or contact us at +91 8309992766');
@@ -449,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        console.log('✅ Contact form correctly attached and ready to send via API');
+        console.log('✅ Contact form correctly attached and ready to send via EmailJS SDK');
     }
 
     // Initialize when DOM is ready

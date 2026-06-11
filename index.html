@@ -12,7 +12,7 @@
     img-src 'self' data: https: blob:;
     media-src 'self' https:;
     connect-src 'self' https: ws: wss: https://api.emailjs.com;
-    frame-src https://www.google.com https://maps.google.com;
+    frame-src https://www.google.com;
     base-uri 'self';
     form-action 'self'
   " />
@@ -525,8 +525,8 @@
             <div class="team-card-image">
               <img src="assets/yogesh.png" alt="Mr. S. Yogeshwaran" class="team-avatar-img" />
               <div class="team-socials">
-                <a href="mailto:jabrpublicationconsultancy@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
-                <a href="tel:+918309992766" title="Contact"><i class="fas fa-phone"></i></a>
+                <a href="mailto:yogeshsakthivel0109@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+                <a href="tel:+918682007024" title="Contact"><i class="fas fa-phone"></i></a>
               </div>
             </div>
             <h4>Mr. S. Yogeshwaran</h4>
@@ -728,25 +728,25 @@
                 <label for="country">Country *</label>
                 <select id="country" name="country" required>
                   <option value="">Select your country</option>
-                  <option value="IN">India</option>
-                  <option value="AE">United Arab Emirates</option>
-                  <option value="SA">Saudi Arabia</option>
-                  <option value="UK">United Kingdom</option>
-                  <option value="US">United States</option>
-                  <option value="CA">Canada</option>
-                  <option value="SG">Singapore</option>
-                  <option value="MY">Malaysia</option>
-                  <option value="EG">Egypt</option>
-                  <option value="AE">Qatar</option>
-                  <option value="DE">Germany</option>
-                  <option value="FR">France</option>
-                  <option value="AU">Australia</option>
-                  <option value="JP">Japan</option>
-                  <option value="CN">China</option>
-                  <option value="BD">Bangladesh</option>
-                  <option value="PK">Pakistan</option>
-                  <option value="TH">Thailand</option>
-                  <option value="VN">Vietnam</option>
+                  <option value="India">India</option>
+                  <option value="United Arab Emirates">United Arab Emirates</option>
+                  <option value="Saudi Arabia">Saudi Arabia</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="United States">United States</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="Malaysia">Malaysia</option>
+                  <option value="Egypt">Egypt</option>
+                  <option value="Qatar">Qatar</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Japan">Japan</option>
+                  <option value="China">China</option>
+                  <option value="Bangladesh">Bangladesh</option>
+                  <option value="Pakistan">Pakistan</option>
+                  <option value="Thailand">Thailand</option>
+                  <option value="Vietnam">Vietnam</option>
                 </select>
               </div>
             </div>
@@ -781,14 +781,7 @@
               <textarea id="message" name="message" rows="4"
                 placeholder="Describe your research topic and requirements..."></textarea>
             </div>
-            <div class="form-group">
-              <label for="manuscript" class="file-label">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <span>Attach Manuscript (PDF, DOC)</span>
-                <input type="file" id="manuscript" name="manuscript" accept=".pdf,.doc,.docx" />
-                <span class="file-name" id="fileName">No file chosen</span>
-              </label>
-            </div>
+
             <button type="submit" class="btn btn-primary btn-glow btn-full" id="submitBtn">
               <span class="btn-text"><i class="fas fa-paper-plane"></i> Submit Consultation Request</span>
               <span class="btn-loader" style="display:none;"><i class="fas fa-circle-notch fa-spin"></i>
@@ -848,13 +841,7 @@
               <a href="#" aria-label="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
             </div>
           </div>
-          <div class="contact-map">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.0!2d80.2!3d13.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDAw&output=embed"
-              width="100%" height="220" style="border:0;border-radius:12px;" allowfullscreen="" loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade" title="JABR Location">
-            </iframe>
-          </div>
+
         </div>
       </div>
     </div>
@@ -937,6 +924,9 @@
   </button>
 
 
+
+  <!-- EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <!-- Main Script -->
   <script defer src="script.js"></script>
