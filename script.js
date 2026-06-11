@@ -331,26 +331,133 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     }
 
-    // ========== EMAILJS CONTACT FORM INTEGRATION ==========
-    // Contact form and file upload handling is done in index.html with EmailJS
-    // This keeps the code centralized and avoids conflicts
+    // ========== EMAILJS CONTACT FORM INTEGRATION (REST API) ==========
+    // EmailJS Configuration
+    const EMAILJS_CONFIG = {
+        publicKey: 'cEsQcXQnUSyKhV9Yg',
+        serviceId: 'service_jabr',
+        templateId: 'template_ekyfz1q',
+        apiUrl: 'https://api.emailjs.com/api/v1.0/email/send'
+    };
 
-    // ---- Newsletter Form ----
-    const newsletterForm = document.getElementById('newsletterForm');
-    newsletterForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const emailInput = newsletterForm.querySelector('input');
-        const email = emailInput?.value;
-        try {
-            await fetch('/api/newsletter', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
+    // Form Validation
+    function validateForm(formData) {
+        const errors = [];
+        
+        if (!formData.fullName?.trim()) errors.push('Full name is required');
+        if (!formData.email?.trim()) errors.push('Email is required');
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.push('Invalid email format');
+        if (!formData.country?.trim()) errors.push('Country is required');
+        if (!formData.service?.trim()) errors.push('Please select a service');
+        
+        return errors;
+    }
+
+    // Setup Contact Form
+    function setupContactForm() {
+        const contactForm = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const formSuccess = document.getElementById('formSuccess');
+        const fileInput = document.getElementById('manuscript');
+        const fileNameDisplay = document.getElementById('fileName');
+
+        if (!contactForm) {
+            console.warn('Contact form not found in DOM');
+            return;
+        }
+
+        // File Upload Handler
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                const fileName = e.target.files[0]?.name || 'No file chosen';
+                fileNameDisplay.textContent = fileName;
             });
-        } catch (err) { /* demo fallback */ }
-        emailInput.value = '';
-        alert('Thank you for subscribing!');
-    });
+        }
+
+        // Form Submit Handler
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get form data
+            const templateParams = {
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                country: document.getElementById('country').value.trim(),
+                whatsapp: document.getElementById('whatsapp').value.trim(),
+                service: document.getElementById('service').value.trim(),
+                message: document.getElementById('message').value.trim(),
+                manuscriptName: fileInput?.files[0]?.name || 'No file attached',
+                submissionDate: new Date().toLocaleString()
+            };
+
+            // Validate form
+            const validationErrors = validateForm(templateParams);
+            if (validationErrors.length > 0) {
+                alert('Please fix the following:\n\n' + validationErrors.join('\n'));
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            const btnText = submitBtn.querySelector('.btn-text');
+            const btnLoader = submitBtn.querySelector('.btn-loader');
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'inline';
+
+            try {
+                // Send email using REST API
+                const response = await fetch(EMAILJS_CONFIG.apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        service_id: EMAILJS_CONFIG.serviceId,
+                        template_id: EMAILJS_CONFIG.templateId,
+                        user_id: EMAILJS_CONFIG.publicKey,
+                        template_params: templateParams
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('✅ Email sent successfully');
+                    
+                    // Show success overlay
+                    formSuccess.classList.add('active');
+                    
+                    // Reset form
+                    contactForm.reset();
+                    fileNameDisplay.textContent = 'No file chosen';
+                    
+                    // Auto-hide success message after 5 seconds
+                    setTimeout(() => {
+                        formSuccess.classList.remove('active');
+                    }, 5000);
+                } else {
+                    const errorText = await response.text();
+                    console.error('❌ Email send error:', errorText);
+                    alert('❌ Failed to send message. Please try again or contact us directly.');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                alert('❌ An error occurred. Please try again or contact us at +91 8309992766');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+            }
+        });
+
+        console.log('✅ Contact form correctly attached and ready to send via API');
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupContactForm);
+    } else {
+        setupContactForm();
+    }
 
     // ---- Back to Top ----
     const backToTop = document.getElementById('backToTop');
