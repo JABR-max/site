@@ -12,14 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fallback
     setTimeout(() => preloader?.classList.add('hidden'), 4000);
 
-    // ---- Cursor Glow ----
-    const cursorGlow = document.getElementById('cursorGlow');
-    if (cursorGlow && window.innerWidth > 768) {
-        document.addEventListener('mousemove', e => {
-            cursorGlow.style.left = e.clientX + 'px';
-            cursorGlow.style.top = e.clientY + 'px';
-        });
-    }
+    // ---- Cursor Glow (disabled for performance) ----
 
     // ---- Scroll Progress ----
     const scrollProgress = document.getElementById('scrollProgress');
@@ -29,13 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (scrollProgress && docH > 0) {
             scrollProgress.style.width = (scrollTop / docH * 100) + '%';
         }
-    });
+    }, { passive: true });
 
     // ---- Navbar scroll effect ----
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
         navbar?.classList.toggle('scrolled', window.scrollY > 20);
-    });
+    }, { passive: true });
 
     // ---- Mobile toggle ----
     const mobileToggle = document.getElementById('mobileToggle');
@@ -54,85 +47,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Active nav link on scroll ----
     const sections = document.querySelectorAll('section[id]');
     const navAnchors = document.querySelectorAll('.nav-links a');
+    let sectionCache = [];
+
+    function cacheSections() {
+        sectionCache = Array.from(sections).map(sec => {
+            const id = sec.getAttribute('id');
+            return {
+                link: document.querySelector(`.nav-links a[href="#${id}"]`),
+                top: sec.offsetTop,
+                height: sec.offsetHeight
+            };
+        });
+    }
+
+    cacheSections();
+    window.addEventListener('resize', cacheSections, { passive: true });
+    window.addEventListener('load', cacheSections, { passive: true });
+
     window.addEventListener('scroll', () => {
         const scrollY = window.scrollY + 120;
-        sections.forEach(sec => {
-            const top = sec.offsetTop;
-            const height = sec.offsetHeight;
-            const id = sec.getAttribute('id');
-            const link = document.querySelector(`.nav-links a[href="#${id}"]`);
-            if (scrollY >= top && scrollY < top + height) {
+        sectionCache.forEach(sec => {
+            if (scrollY >= sec.top && scrollY < sec.top + sec.height) {
                 navAnchors.forEach(a => a.classList.remove('active'));
-                link?.classList.add('active');
+                sec.link?.classList.add('active');
             }
         });
-    });
+    }, { passive: true });
 
-    // ---- Hero Particles Canvas ----
-    const canvas = document.getElementById('heroParticles');
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        const resize = () => {
-            canvas.width = canvas.parentElement.offsetWidth;
-            canvas.height = canvas.parentElement.offsetHeight;
-        };
-        resize();
-        window.addEventListener('resize', resize);
-
-        class Particle {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.3;
-                this.speedY = (Math.random() - 0.5) * 0.3;
-                this.opacity = Math.random() * 0.4 + 0.1;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(59, 130, 246, ${this.opacity})`;
-                ctx.fill();
-            }
-        }
-
-        const count = Math.min(80, Math.floor(canvas.width * canvas.height / 12000));
-        for (let i = 0; i < count; i++) particles.push(new Particle());
-
-        function drawLines() {
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 120) {
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(59, 130, 246, ${0.06 * (1 - dist / 120)})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            drawLines();
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-    }
+    // ---- Hero Particles (removed for performance) ----
 
     // ---- Typing Text ----
     const typingEl = document.getElementById('typingText');
@@ -459,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToTop = document.getElementById('backToTop');
     window.addEventListener('scroll', () => {
         backToTop?.classList.toggle('visible', window.scrollY > 500);
-    });
+    }, { passive: true });
     backToTop?.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
