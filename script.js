@@ -1,38 +1,90 @@
 /* ========================================
    JABR Publication Consultancy
-   Frontend JavaScript v2.0
+   Frontend JavaScript v3.0 -- Performance Optimised
    ======================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+
     // ---- Preloader ----
     const preloader = document.getElementById('preloader');
     window.addEventListener('load', () => {
-        setTimeout(() => preloader?.classList.add('hidden'), 2200);
+        setTimeout(() => preloader?.classList.add('hidden'), 1800);
     });
-    // Fallback
-    setTimeout(() => preloader?.classList.add('hidden'), 4000);
+    setTimeout(() => preloader?.classList.add('hidden'), 3500);
 
-    // ---- Cursor Glow (disabled for performance) ----
-
-    // ---- Scroll Progress ----
+    // ================================================================
+    // MERGED SCROLL HANDLER - single rAF-throttled listener
+    // ================================================================
     const scrollProgress = document.getElementById('scrollProgress');
-    window.addEventListener('scroll', () => {
-        const scrollTop = window.scrollY;
-        const docH = document.documentElement.scrollHeight - window.innerHeight;
-        if (scrollProgress && docH > 0) {
-            scrollProgress.style.width = (scrollTop / docH * 100) + '%';
-        }
-    }, { passive: true });
+    const navbar         = document.getElementById('navbar');
+    const backToTop      = document.getElementById('backToTop');
+    const sections       = document.querySelectorAll('section[id]');
+    const navAnchors     = document.querySelectorAll('.nav-links a');
 
-    // ---- Navbar scroll effect ----
-    const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-        navbar?.classList.toggle('scrolled', window.scrollY > 20);
-    }, { passive: true });
+    let rafPending = false;
+    let sectionCache = [];
+    let currentActiveLink = null;
+
+    function cacheSections() {
+        sectionCache = Array.from(sections).map(sec => ({
+            link: document.querySelector('.nav-links a[href="#' + sec.id + '"]'),
+            top: sec.offsetTop,
+            height: sec.offsetHeight
+        }));
+    }
+    cacheSections();
+    window.addEventListener('resize', cacheSections, { passive: true });
+    window.addEventListener('load',   cacheSections, { passive: true });
+
+    function onScroll() {
+        if (rafPending) return;
+        rafPending = true;
+        requestAnimationFrame(() => {
+            rafPending = false;
+            const scrollY = window.scrollY;
+            const docH    = document.documentElement.scrollHeight - window.innerHeight;
+
+            if (scrollProgress && docH > 0) {
+                const targetW = (scrollY / docH * 100) + '%';
+                if (scrollProgress.style.width !== targetW) {
+                    scrollProgress.style.width = targetW;
+                }
+            }
+
+            const isScrolled = scrollY > 20;
+            if (navbar && navbar.classList.contains('scrolled') !== isScrolled) {
+                navbar.classList.toggle('scrolled', isScrolled);
+            }
+
+            const isBTTVisible = scrollY > 500;
+            if (backToTop && backToTop.classList.contains('visible') !== isBTTVisible) {
+                backToTop.classList.toggle('visible', isBTTVisible);
+            }
+
+            const scrollPos = scrollY + 120;
+            let activeSec = null;
+            for (let i = 0; i < sectionCache.length; i++) {
+                const sec = sectionCache[i];
+                if (scrollPos >= sec.top && scrollPos < sec.top + sec.height) {
+                    activeSec = sec;
+                    break;
+                }
+            }
+
+            if (activeSec && activeSec.link !== currentActiveLink) {
+                if (currentActiveLink) currentActiveLink.classList.remove('active');
+                activeSec.link?.classList.add('active');
+                currentActiveLink = activeSec.link;
+            }
+        });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
     // ---- Mobile toggle ----
     const mobileToggle = document.getElementById('mobileToggle');
-    const navLinks = document.getElementById('navLinks');
+    const navLinks     = document.getElementById('navLinks');
     mobileToggle?.addEventListener('click', () => {
         navLinks?.classList.toggle('open');
         mobileToggle.classList.toggle('active');
@@ -44,99 +96,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ---- Active nav link on scroll ----
-    const sections = document.querySelectorAll('section[id]');
-    const navAnchors = document.querySelectorAll('.nav-links a');
-    let sectionCache = [];
-
-    function cacheSections() {
-        sectionCache = Array.from(sections).map(sec => {
-            const id = sec.getAttribute('id');
-            return {
-                link: document.querySelector(`.nav-links a[href="#${id}"]`),
-                top: sec.offsetTop,
-                height: sec.offsetHeight
-            };
-        });
-    }
-
-    cacheSections();
-    window.addEventListener('resize', cacheSections, { passive: true });
-    window.addEventListener('load', cacheSections, { passive: true });
-
-    window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY + 120;
-        sectionCache.forEach(sec => {
-            if (scrollY >= sec.top && scrollY < sec.top + sec.height) {
-                navAnchors.forEach(a => a.classList.remove('active'));
-                sec.link?.classList.add('active');
-            }
-        });
-    }, { passive: true });
-
-    // ---- Hero Particles (removed for performance) ----
-
-    // ---- Typing Text ----
+    // ---- Typing Text (flat interval, optimized to pause when off-screen) ----
     const typingEl = document.getElementById('typingText');
     if (typingEl) {
         const words = ['Ambitious Scholars', 'PhD Researchers', 'Global Academics', 'Emerging Scientists', 'University Faculty'];
-        let wordIdx = 0, charIdx = 0, isDeleting = false;
-        function type() {
+        let wordIdx = 0, charIdx = 0, isDeleting = false, pauseCount = 0;
+        const PAUSE_FRAMES = 25; // 25 frames * 80ms = 2s pause
+        let isTypingVisible = true;
+
+        const heroSection = document.getElementById('home');
+        if (heroSection) {
+            const typingObserver = new IntersectionObserver((entries) => {
+                isTypingVisible = entries[0].isIntersecting;
+            }, { threshold: 0.1 });
+            typingObserver.observe(heroSection);
+        }
+
+        setInterval(() => {
+            if (!isTypingVisible) return;
             const current = words[wordIdx];
             if (!isDeleting) {
-                typingEl.textContent = current.substring(0, charIdx + 1);
                 charIdx++;
-                if (charIdx === current.length) {
-                    isDeleting = true;
-                    setTimeout(type, 2000);
-                    return;
-                }
-                setTimeout(type, 80);
-            } else {
                 typingEl.textContent = current.substring(0, charIdx);
-                charIdx--;
-                if (charIdx < 0) {
-                    isDeleting = false;
-                    charIdx = 0;
-                    wordIdx = (wordIdx + 1) % words.length;
-                    setTimeout(type, 400);
-                    return;
+                if (charIdx === current.length) {
+                    if (pauseCount < PAUSE_FRAMES) { pauseCount++; return; }
+                    pauseCount = 0;
+                    isDeleting = true;
                 }
-                setTimeout(type, 40);
+            } else {
+                charIdx--;
+                typingEl.textContent = current.substring(0, charIdx);
+                if (charIdx === 0) {
+                    isDeleting = false;
+                    wordIdx = (wordIdx + 1) % words.length;
+                }
             }
-        }
-        setTimeout(type, 1000);
+        }, 80);
     }
 
     // ---- Count-Up Animation ----
     const statNumbers = document.querySelectorAll('.stat-number');
     const countObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const el = entry.target;
-                const target = parseInt(el.dataset.target);
-                const duration = 2000;
-                const start = performance.now();
-                function animate(now) {
-                    const elapsed = now - start;
-                    const progress = Math.min(elapsed / duration, 1);
-                    const eased = 1 - Math.pow(1 - progress, 3);
-                    el.textContent = Math.floor(eased * target);
-                    if (progress < 1) requestAnimationFrame(animate);
-                }
-                requestAnimationFrame(animate);
-
-                // Animate stat bars
-                const card = el.closest('.stat-card');
-                const barFill = card?.querySelector('.stat-bar-fill');
-                if (barFill) {
-                    setTimeout(() => { barFill.style.width = barFill.dataset.width + '%'; }, 300);
-                }
-
-                countObserver.unobserve(el);
+            if (!entry.isIntersecting) return;
+            const el     = entry.target;
+            const target = parseInt(el.dataset.target);
+            const start  = performance.now();
+            const dur    = 1800;
+            function animate(now) {
+                const p = Math.min((now - start) / dur, 1);
+                el.textContent = Math.floor((1 - Math.pow(1 - p, 3)) * target);
+                if (p < 1) requestAnimationFrame(animate);
             }
+            requestAnimationFrame(animate);
+            const barFill = el.closest('.stat-card')?.querySelector('.stat-bar-fill');
+            if (barFill) setTimeout(() => { barFill.style.width = barFill.dataset.width + '%'; }, 300);
+            countObserver.unobserve(el);
         });
-    }, { threshold: 0.4 });
+    }, { threshold: 0.15 });
     statNumbers.forEach(n => countObserver.observe(n));
 
     // ---- Service Cards Scroll Animation ----
@@ -148,279 +165,200 @@ document.addEventListener('DOMContentLoaded', () => {
                 cardObserver.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.15 });
+    }, { threshold: 0.1 });
     serviceCards.forEach(c => cardObserver.observe(c));
 
     // ---- Timeline Animation ----
     const timelineItems = document.querySelectorAll('.timeline-h-item');
-    const timelineFill = document.getElementById('timelineHFill');
+    const timelineFill  = document.getElementById('timelineHFill');
     const timelineObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                timelineItems.forEach((item, i) => {
-                    setTimeout(() => item.classList.add('visible'), i * 200);
-                });
-                if (timelineFill) {
-                    setTimeout(() => { timelineFill.style.width = '100%'; }, 200);
-                }
+                timelineItems.forEach((item, i) => setTimeout(() => item.classList.add('visible'), i * 200));
+                if (timelineFill) setTimeout(() => { timelineFill.style.width = '100%'; }, 200);
                 timelineObserver.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.2 });
-    if (timelineItems.length > 0) {
+    }, { threshold: 0.1 });
+    if (timelineItems.length > 0)
         timelineObserver.observe(timelineItems[0].closest('.timeline-horizontal'));
-    }
-
-    // ---- Testimonial Slider ----
-    const track = document.getElementById('testimonialTrack');
-    const dotsContainer = document.getElementById('testimonialDots');
-    const prevBtn = document.getElementById('prevTestimonial');
-    const nextBtn = document.getElementById('nextTestimonial');
-    if (track) {
-        const cards = track.querySelectorAll('.testimonial-card');
-        let currentSlide = 0;
-        const totalSlides = cards.length;
-
-        // Create dots
-        for (let i = 0; i < totalSlides; i++) {
-            const dot = document.createElement('div');
-            dot.classList.add('dot');
-            if (i === 0) dot.classList.add('active');
-            dot.addEventListener('click', () => goToSlide(i));
-            dotsContainer?.appendChild(dot);
-        }
-
-        function goToSlide(n) {
-            currentSlide = n;
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
-            document.querySelectorAll('.testimonial-dots .dot').forEach((d, i) => {
-                d.classList.toggle('active', i === currentSlide);
-            });
-        }
-        prevBtn?.addEventListener('click', () => goToSlide((currentSlide - 1 + totalSlides) % totalSlides));
-        nextBtn?.addEventListener('click', () => goToSlide((currentSlide + 1) % totalSlides));
-
-        // Auto advance
-        let autoSlide = setInterval(() => goToSlide((currentSlide + 1) % totalSlides), 5000);
-        track.closest('.testimonial-slider')?.addEventListener('mouseenter', () => clearInterval(autoSlide));
-        track.closest('.testimonial-slider')?.addEventListener('mouseleave', () => {
-            autoSlide = setInterval(() => goToSlide((currentSlide + 1) % totalSlides), 5000);
-        });
-    }
 
     // ---- FAQ Accordion ----
     document.querySelectorAll('.faq-question').forEach(btn => {
         btn.addEventListener('click', () => {
-            const item = btn.closest('.faq-item');
+            const item     = btn.closest('.faq-item');
             const isActive = item.classList.contains('active');
             document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
             if (!isActive) item.classList.add('active');
         });
     });
 
-    // ---- Global Map SVG ----
+    // ---- Global Map SVG (CSS-animated only, no SMIL, 4 pulsing rings max) ----
     const mapContainer = document.getElementById('globalMap');
     if (mapContainer) {
         const locations = [
-            { name: 'India', cx: 540, cy: 145, r: 6 },
-            { name: 'UAE', cx: 480, cy: 135, r: 5 },
-            { name: 'Saudi Arabia', cx: 460, cy: 130, r: 5 },
-            { name: 'Singapore', cx: 590, cy: 175, r: 4 },
-            { name: 'Malaysia', cx: 585, cy: 170, r: 4 },
-            { name: 'UK', cx: 370, cy: 75, r: 5 },
-            { name: 'Germany', cx: 395, cy: 80, r: 4 },
-            { name: 'Egypt', cx: 430, cy: 125, r: 5 },
-            { name: 'USA', cx: 180, cy: 100, r: 5 },
-            { name: 'Canada', cx: 175, cy: 75, r: 4 },
-            { name: 'Japan', cx: 650, cy: 105, r: 4 },
-            { name: 'China', cx: 610, cy: 115, r: 5 },
-            { name: 'France', cx: 380, cy: 85, r: 4 },
-            { name: 'Qatar', cx: 475, cy: 132, r: 4 },
-            { name: 'Australia', cx: 640, cy: 220, r: 4 },
+            { name: 'India',        cx: 540, cy: 145, r: 6, pulse: true  },
+            { name: 'UAE',          cx: 480, cy: 135, r: 5, pulse: true  },
+            { name: 'Saudi Arabia', cx: 460, cy: 130, r: 5, pulse: false },
+            { name: 'Singapore',    cx: 590, cy: 175, r: 4, pulse: false },
+            { name: 'Malaysia',     cx: 585, cy: 170, r: 4, pulse: false },
+            { name: 'UK',           cx: 370, cy: 75,  r: 5, pulse: true  },
+            { name: 'Germany',      cx: 395, cy: 80,  r: 4, pulse: false },
+            { name: 'Egypt',        cx: 430, cy: 125, r: 5, pulse: false },
+            { name: 'USA',          cx: 180, cy: 100, r: 5, pulse: true  },
+            { name: 'Canada',       cx: 175, cy: 75,  r: 4, pulse: false },
+            { name: 'Japan',        cx: 650, cy: 105, r: 4, pulse: false },
+            { name: 'China',        cx: 610, cy: 115, r: 5, pulse: false },
+            { name: 'France',       cx: 380, cy: 85,  r: 4, pulse: false },
+            { name: 'Qatar',        cx: 475, cy: 132, r: 4, pulse: false },
+            { name: 'Australia',    cx: 640, cy: 220, r: 4, pulse: false },
         ];
 
         let dots = '';
-        locations.forEach((loc, i) => {
-            dots += `
-        <circle cx="${loc.cx}" cy="${loc.cy}" r="${loc.r}" fill="#0d9488" opacity="0.8">
-          <animate attributeName="r" values="${loc.r};${loc.r + 3};${loc.r}" dur="${2 + i * 0.3}s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.8;0.3;0.8" dur="${2 + i * 0.3}s" repeatCount="indefinite"/>
-        </circle>
-        <circle cx="${loc.cx}" cy="${loc.cy}" r="2" fill="#14b8a6"/>
-        <text x="${loc.cx}" y="${loc.cy - loc.r - 6}" text-anchor="middle" font-size="8" fill="#475569" font-family="Inter, sans-serif" font-weight="600">${loc.name}</text>
-      `;
+        locations.forEach(loc => {
+            dots += loc.pulse
+                ? '<circle cx="' + loc.cx + '" cy="' + loc.cy + '" r="' + (loc.r + 4) + '" fill="none" stroke="#0d9488" stroke-width="1.5" class="dot-ring" />'
+                : '';
+            dots += '<circle cx="' + loc.cx + '" cy="' + loc.cy + '" r="' + loc.r + '" fill="#0d9488" opacity="0.9"/>';
+            dots += '<circle cx="' + loc.cx + '" cy="' + loc.cy + '" r="2.5" fill="#14b8a6"/>';
+            dots += '<text x="' + loc.cx + '" y="' + (loc.cy - loc.r - 5) + '" text-anchor="middle" font-size="8" fill="#ffffff" font-family="Inter,sans-serif" font-weight="700">' + loc.name + '</text>';
         });
 
-        mapContainer.innerHTML = `
-      <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#e2e8f0;stop-opacity:0.3"/>
-            <stop offset="100%" style="stop-color:#f1f5f9;stop-opacity:0.5"/>
-          </linearGradient>
-        </defs>
-        <!-- Simplified world outline -->
-        <ellipse cx="400" cy="150" rx="380" ry="130" fill="url(#mapGrad)" stroke="#e2e8f0" stroke-width="1"/>
-        <!-- Grid lines -->
-        <line x1="20" y1="150" x2="780" y2="150" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="4,4"/>
-        <line x1="400" y1="20" x2="400" y2="280" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="4,4"/>
-        <line x1="200" y1="20" x2="200" y2="280" stroke="#e2e8f0" stroke-width="0.3" stroke-dasharray="4,4"/>
-        <line x1="600" y1="20" x2="600" y2="280" stroke="#e2e8f0" stroke-width="0.3" stroke-dasharray="4,4"/>
-        <line x1="20" y1="80" x2="780" y2="80" stroke="#e2e8f0" stroke-width="0.3" stroke-dasharray="4,4"/>
-        <line x1="20" y1="220" x2="780" y2="220" stroke="#e2e8f0" stroke-width="0.3" stroke-dasharray="4,4"/>
-        ${dots}
-      </svg>
-    `;
+        const connections = [
+            { from: 'India', to: 'UK' }, { from: 'India', to: 'USA' },
+            { from: 'India', to: 'UAE' }, { from: 'India', to: 'Singapore' },
+            { from: 'India', to: 'Australia' }, { from: 'India', to: 'Japan' },
+            { from: 'India', to: 'Saudi Arabia' }
+        ];
+        let linesSvg = '';
+        connections.forEach(conn => {
+            const f = locations.find(l => l.name === conn.from);
+            const t = locations.find(l => l.name === conn.to);
+            if (f && t) {
+                const mx = (f.cx + t.cx) / 2;
+                const my = (f.cy + t.cy) / 2 - 30;
+                linesSvg += '<path d="M ' + f.cx + ' ' + f.cy + ' Q ' + mx + ' ' + my + ' ' + t.cx + ' ' + t.cy + '" class="connection-line" />';
+            }
+        });
+
+        mapContainer.innerHTML =
+            '<svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" class="map-svg">' +
+            '<defs><style>' +
+            '.map-grid-line{stroke:rgba(255,255,255,0.08);stroke-width:0.5;stroke-dasharray:4,4;}' +
+            '.connection-line{stroke:#e0b840;stroke-width:1.5;stroke-dasharray:6,4;fill:none;opacity:0.6;animation:connectionFlow 30s linear infinite;will-change:stroke-dashoffset;}' +
+            '@keyframes connectionFlow{to{stroke-dashoffset:-500;}}' +
+            '.dot-ring{animation:dotPulse 2.8s ease-out infinite;will-change:opacity;}' +
+            '@keyframes dotPulse{0%{r:4;opacity:0.8;}70%{r:11;opacity:0;}100%{r:11;opacity:0;}}' +
+            '</style></defs>' +
+            '<line x1="20" y1="150" x2="780" y2="150" class="map-grid-line"/>' +
+            '<line x1="400" y1="20" x2="400" y2="280" class="map-grid-line"/>' +
+            '<line x1="200" y1="20" x2="200" y2="280" class="map-grid-line"/>' +
+            '<line x1="600" y1="20" x2="600" y2="280" class="map-grid-line"/>' +
+            '<line x1="20" y1="80" x2="780" y2="80" class="map-grid-line"/>' +
+            '<line x1="20" y1="220" x2="780" y2="220" class="map-grid-line"/>' +
+            linesSvg + dots + '</svg>';
     }
 
-    // ========== EMAILJS CONTACT FORM INTEGRATION (SDK) ==========
-    // EmailJS Configuration
+    // ================================================================
+    // EMAILJS CONTACT FORM
+    // ================================================================
     const EMAILJS_CONFIG = {
-        publicKey: 'cEsQcXQnUSyKhV9Yg',
-        serviceId: 'service_jabr',
+        publicKey:  'cEsQcXQnUSyKhV9Yg',
+        serviceId:  'service_jabr',
         templateId: 'template_ekyfz1q'
     };
+    if (typeof emailjs !== 'undefined') emailjs.init(EMAILJS_CONFIG.publicKey);
 
-    // Initialize EmailJS
-    if (typeof emailjs !== 'undefined') {
-        emailjs.init(EMAILJS_CONFIG.publicKey);
-    }
-
-    // Form Validation
     function validateForm(formData) {
         const errors = [];
-        
         if (!formData.get('fullName')?.trim()) errors.push('Full name is required');
         if (!formData.get('email')?.trim()) errors.push('Email is required');
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.get('email'))) errors.push('Invalid email format');
         if (!formData.get('country')?.trim()) errors.push('Country is required');
         if (!formData.get('service')?.trim()) errors.push('Please select a service');
-        
         return errors;
     }
 
-    // Setup Contact Form
     function setupContactForm() {
         const contactForm = document.getElementById('contactForm');
-        const submitBtn = document.getElementById('submitBtn');
+        const submitBtn   = document.getElementById('submitBtn');
         const formSuccess = document.getElementById('formSuccess');
+        if (!contactForm) return;
 
-
-        if (!contactForm) {
-            console.warn('Contact form not found in DOM');
-            return;
-        }
-
-
-        // Form Submit Handler
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            // Validate form
             const formData = new FormData(contactForm);
-            const validationErrors = validateForm(formData);
-            if (validationErrors.length > 0) {
-                alert('Please fix the following:\n\n' + validationErrors.join('\n'));
-                return;
-            }
+            const errs = validateForm(formData);
+            if (errs.length) { alert('Please fix:\n\n' + errs.join('\n')); return; }
 
-            // Add hidden fields for submissionDate and manuscriptName
             let dateInput = contactForm.querySelector('input[name="submissionDate"]');
             if (!dateInput) {
                 dateInput = document.createElement('input');
-                dateInput.type = 'hidden';
-                dateInput.name = 'submissionDate';
+                dateInput.type = 'hidden'; dateInput.name = 'submissionDate';
                 contactForm.appendChild(dateInput);
             }
             dateInput.value = new Date().toLocaleString();
 
-            let msNameInput = contactForm.querySelector('input[name="manuscriptName"]');
-            if (!msNameInput) {
-                msNameInput = document.createElement('input');
-                msNameInput.type = 'hidden';
-                msNameInput.name = 'manuscriptName';
-                contactForm.appendChild(msNameInput);
+            let msInput = contactForm.querySelector('input[name="manuscriptName"]');
+            if (!msInput) {
+                msInput = document.createElement('input');
+                msInput.type = 'hidden'; msInput.name = 'manuscriptName';
+                contactForm.appendChild(msInput);
             }
-            msNameInput.value = 'N/A';
+            msInput.value = 'N/A';
 
-            // Show loading state
             submitBtn.disabled = true;
-            const btnText = submitBtn.querySelector('.btn-text');
+            const btnText   = submitBtn.querySelector('.btn-text');
             const btnLoader = submitBtn.querySelector('.btn-loader');
-            btnText.style.display = 'none';
-            btnLoader.style.display = 'inline';
+            if (btnText)   btnText.style.display   = 'none';
+            if (btnLoader) btnLoader.style.display = 'inline';
 
             try {
-                if (typeof emailjs === 'undefined') {
-                    throw new Error('EmailJS SDK not loaded.');
-                }
-                
-                // Send email using EmailJS SDK
-                await emailjs.sendForm(
-                    EMAILJS_CONFIG.serviceId, 
-                    EMAILJS_CONFIG.templateId, 
-                    contactForm, 
-                    { publicKey: EMAILJS_CONFIG.publicKey }
-                );
-
-                console.log('✅ Email sent successfully');
-                
-                // Show success overlay
-                formSuccess.classList.add('active');
-                
-                // Reset form
+                if (typeof emailjs === 'undefined') throw new Error('EmailJS SDK not loaded.');
+                await emailjs.sendForm(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, contactForm, { publicKey: EMAILJS_CONFIG.publicKey });
+                formSuccess?.classList.add('active');
                 contactForm.reset();
-
-                
-                // Auto-hide success message after 5 seconds
-                setTimeout(() => {
-                    formSuccess.classList.remove('active');
-                }, 5000);
-            } catch (error) {
-                console.error('Form submission error:', error);
-                alert('❌ An error occurred. Please try again or contact us at +91 8309992766');
+                setTimeout(() => formSuccess?.classList.remove('active'), 5000);
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred. Please try again or contact us at +91 8309992766');
             } finally {
-                // Reset button state
                 submitBtn.disabled = false;
-                btnText.style.display = 'inline';
-                btnLoader.style.display = 'none';
+                if (btnText)   btnText.style.display   = 'inline';
+                if (btnLoader) btnLoader.style.display = 'none';
             }
         });
-
-        console.log('✅ Contact form correctly attached and ready to send via EmailJS SDK');
     }
+    setupContactForm();
 
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupContactForm);
-    } else {
-        setupContactForm();
-    }
-
-    // ---- Back to Top ----
-    const backToTop = document.getElementById('backToTop');
-    window.addEventListener('scroll', () => {
-        backToTop?.classList.toggle('visible', window.scrollY > 500);
-    }, { passive: true });
-    backToTop?.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // ---- General scroll-reveal for sections ----
-    const revealElements = document.querySelectorAll('.section-header, .about-feature, .feature-box, .blog-card, .region-card, .faq-item');
+    // ---- General scroll-reveal ----
+    const revealElements = document.querySelectorAll(
+        '.section-header, .about-feature, .feature-box, .region-card, .faq-item, .team-card, .partner-card, .contact-info-card, .review-card'
+    );
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-                revealObserver.unobserve(entry.target);
+                const target = entry.target;
+                target.style.opacity   = '1';
+                target.style.transform = 'translateY(0)';
+                
+                // Free GPU compositing memory after animation completes
+                target.addEventListener('transitionend', function handler() {
+                    target.style.transition = '';
+                    target.style.willChange = '';
+                    target.removeEventListener('transitionend', handler);
+                }, { once: true });
+
+                revealObserver.unobserve(target);
             }
         });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.08 });
+
     revealElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        el.style.opacity    = '0';
+        el.style.transform  = 'translateY(18px)';
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        el.style.willChange = 'opacity, transform';
         revealObserver.observe(el);
     });
 });
