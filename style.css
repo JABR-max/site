@@ -441,6 +441,10 @@ textarea {
   border-right-color: transparent;
 }
 
+.typing-text.cursor-visible {
+  border-right-color: rgba(201, 162, 39, .85);
+}
+
 .gradient-text {
   background: linear-gradient(135deg, #c9a227 0%, #e0b840 50%, #ffffff 100%);
   background-size: 200% auto;

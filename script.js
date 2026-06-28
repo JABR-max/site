@@ -96,32 +96,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ---- Typing Text (flat interval, optimized to pause when off-screen) ----
+    // ---- Typing Text ----
     const typingEl = document.getElementById('typingText');
     if (typingEl) {
         const words = ['Ambitious Scholars', 'PhD Researchers', 'Global Academics', 'Emerging Scientists', 'University Faculty'];
-        let wordIdx = 0, charIdx = 0, isDeleting = false, pauseCount = 0;
-        const PAUSE_FRAMES = 25; // 25 frames * 80ms = 2s pause
+        let wordIdx = 0;
+        let charIdx = 0;
+        let isDeleting = false;
+        let typingTimer = null;
         let isTypingVisible = true;
 
         const heroSection = document.getElementById('home');
-        if (heroSection) {
+        if (heroSection && 'IntersectionObserver' in window) {
             const typingObserver = new IntersectionObserver((entries) => {
-                isTypingVisible = entries[0].isIntersecting;
+                isTypingVisible = entries[0]?.isIntersecting ?? true;
             }, { threshold: 0.1 });
             typingObserver.observe(heroSection);
         }
 
-        setInterval(() => {
-            if (!isTypingVisible) return;
+        const updateCursor = () => {
+            typingEl.classList.toggle('cursor-visible', Math.floor(Date.now() / 500) % 2 === 0);
+        };
+
+        const typeText = () => {
+            if (!isTypingVisible) {
+                typingTimer = window.setTimeout(typeText, 220);
+                return;
+            }
+
             const current = words[wordIdx];
             if (!isDeleting) {
                 charIdx++;
                 typingEl.textContent = current.substring(0, charIdx);
                 if (charIdx === current.length) {
-                    if (pauseCount < PAUSE_FRAMES) { pauseCount++; return; }
-                    pauseCount = 0;
                     isDeleting = true;
+                    typingTimer = window.setTimeout(typeText, 2200);
+                    return;
                 }
             } else {
                 charIdx--;
@@ -129,9 +139,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (charIdx === 0) {
                     isDeleting = false;
                     wordIdx = (wordIdx + 1) % words.length;
+                    typingTimer = window.setTimeout(typeText, 800);
+                    return;
                 }
             }
-        }, 80);
+
+            typingTimer = window.setTimeout(typeText, isDeleting ? 45 : 85);
+        };
+
+        updateCursor();
+        setInterval(updateCursor, 500);
+        typeText();
     }
 
     // ---- Count-Up Animation ----
